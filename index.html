@@ -304,6 +304,21 @@
       color: var(--subtle);
     }
 
+    /* ── LANG TOGGLE ── */
+    .lang-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
     /* ── MOBILE NAV ── */
     @media (max-width: 600px) {
       nav { padding: 1.25rem 1.5rem; }
@@ -318,42 +333,43 @@
   <nav>
     <a class="logo" href="#"><span>az</span>alval</a>
     <ul>
-      <li><a href="#services">Services</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#contact" class="nav-cta">Let's talk</a></li>
+      <li><a href="#services" data-en="Services" data-es="Servicios">Services</a></li>
+      <li><a href="#about" data-en="About" data-es="Acerca de">About</a></li>
+      <li><a href="#contact" class="nav-cta" data-en="Let's talk" data-es="Hablemos">Let's talk</a></li>
+      <li><button class="lang-toggle" id="langBtn" onclick="toggleLang()">ES</button></li>
     </ul>
   </nav>
 
   <section class="hero" id="home">
-    <div class="badge">AI Consultant</div>
-    <h1>I help businesses<br><span class="gradient">modernize with AI.</span></h1>
-    <p>Practical AI strategies that streamline operations, reduce manual work, and give your team a real competitive edge.</p>
+    <div class="badge" data-en="AI Consultant" data-es="Consultora de IA">AI Consultant</div>
+    <h1 data-en="I help businesses<br><span class='gradient'>modernize with AI.</span>" data-es="Ayudo a empresas a<br><span class='gradient'>modernizarse con IA.</span>">I help businesses<br><span class="gradient">modernize with AI.</span></h1>
+    <p data-en="Practical AI strategies that streamline operations, reduce manual work, and give your team a real competitive edge." data-es="Estrategias de IA prácticas que optimizan operaciones, reducen el trabajo manual y le dan a tu equipo una verdadera ventaja competitiva.">Practical AI strategies that streamline operations, reduce manual work, and give your team a real competitive edge.</p>
     <div class="hero-actions">
-      <a class="btn btn-primary" href="#contact">Get in touch →</a>
-      <a class="btn btn-ghost" href="#services">See what I do</a>
+      <a class="btn btn-primary" href="#contact" data-en="Get in touch →" data-es="Contáctame →">Get in touch →</a>
+      <a class="btn btn-ghost" href="#services" data-en="See what I do" data-es="Lo que hago">See what I do</a>
     </div>
   </section>
 
   <div class="divider"></div>
 
   <section class="services" id="services">
-    <p class="section-tag">Services</p>
-    <h2 class="section-heading">How I can help</h2>
+    <p class="section-tag" data-en="Services" data-es="Servicios">Services</p>
+    <h2 class="section-heading" data-en="How I can help" data-es="Cómo puedo ayudarte">How I can help</h2>
     <div class="services-grid">
       <div class="service-card">
         <div class="service-icon">🤖</div>
-        <h3>AI Strategy</h3>
-        <p>A practical roadmap for embedding AI into your operations — grounded in real business outcomes, not hype. Backed by a UC Berkeley AI certification and hands-on work accelerating AI-driven experimentation at scale.</p>
+        <h3 data-en="AI Strategy" data-es="Estrategia de IA">AI Strategy</h3>
+        <p data-en="A practical roadmap for embedding AI into your operations — grounded in real business outcomes, not hype. Backed by a UC Berkeley AI certification and hands-on work accelerating AI-driven experimentation at scale." data-es="Un plan práctico para integrar IA en tus operaciones — basada en resultados de negocio reales, sin exageración. Respaldada por una certificación en IA de UC Berkeley y experiencia acelerando la experimentación con IA a escala.">A practical roadmap for embedding AI into your operations — grounded in real business outcomes, not hype. Backed by a UC Berkeley AI certification and hands-on work accelerating AI-driven experimentation at scale.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">🚀</div>
-        <h3>Product Strategy</h3>
-        <p>From 0-to-1 product builds to growth strategy for mature platforms. 15+ years launching and scaling products at Intuit, PayPal, and Konfio — across the US, LATAM, and EMEA.</p>
+        <h3 data-en="Product Strategy" data-es="Estrategia de Producto">Product Strategy</h3>
+        <p data-en="From 0-to-1 product builds to growth strategy for mature platforms. 15+ years launching and scaling products at Intuit, PayPal, and Konfio — across the US, LATAM, and EMEA." data-es="Desde productos de 0 a 1 hasta estrategias de crecimiento para plataformas maduras. Más de 15 años lanzando y escalando productos en Intuit, PayPal y Konfio — en EE.UU., LATAM y EMEA.">From 0-to-1 product builds to growth strategy for mature platforms. 15+ years launching and scaling products at Intuit, PayPal, and Konfio — across the US, LATAM, and EMEA.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">📊</div>
-        <h3>Data & Analytics</h3>
-        <p>Turn data into decisions. Advanced SQL, behavioral analytics, and pricing analysis — the kind that drove $100M+ in incremental revenue. I help you find the signal in your data.</p>
+        <h3 data-en="Data &amp; Analytics" data-es="Datos y Analítica">Data &amp; Analytics</h3>
+        <p data-en="Turn data into decisions. Advanced SQL, behavioral analytics, and pricing analysis — the kind that drove $100M+ in incremental revenue. I help you find the signal in your data." data-es="Convierte datos en decisiones. SQL avanzado, analítica de comportamiento y análisis de precios — el tipo que generó más de $100M en ingresos incrementales. Te ayudo a encontrar la señal en tus datos.">Turn data into decisions. Advanced SQL, behavioral analytics, and pricing analysis — the kind that drove $100M+ in incremental revenue. I help you find the signal in your data.</p>
       </div>
     </div>
   </section>
@@ -363,26 +379,26 @@
   <section class="about" id="about">
     <div class="about-inner">
       <div class="about-text">
-        <p class="section-tag">About</p>
-        <h2>Built on real-world results.</h2>
-        <p>15+ years building and scaling products at Intuit, PayPal, and Konfio — across the US, Latin America, and EMEA. I've led teams, launched platforms used by millions, and driven measurable revenue impact at every stage.</p>
+        <p class="section-tag" data-en="About" data-es="Acerca de">About</p>
+        <h2 data-en="Built on real-world results." data-es="Resultados del mundo real.">Built on real-world results.</h2>
+        <p data-en="15+ years building and scaling products at Intuit, PayPal, and Konfio — across the US, Latin America, and EMEA. I've led teams, launched platforms used by millions, and driven measurable revenue impact at every stage." data-es="Más de 15 años construyendo y escalando productos en Intuit, PayPal y Konfio — en EE.UU., América Latina y EMEA. He liderado equipos, lanzado plataformas usadas por millones y generado impacto medible en ingresos en cada etapa.">15+ years building and scaling products at Intuit, PayPal, and Konfio — across the US, Latin America, and EMEA. I've led teams, launched platforms used by millions, and driven measurable revenue impact at every stage.</p>
       </div>
       <div class="about-stats">
         <div class="stat-card">
           <div class="num">$100M+</div>
-          <div class="label">Incremental revenue driven</div>
+          <div class="label" data-en="Incremental revenue driven" data-es="Ingresos incrementales generados">Incremental revenue driven</div>
         </div>
         <div class="stat-card">
           <div class="num">15B+</div>
-          <div class="label">API requests/yr on platforms I've built</div>
+          <div class="label" data-en="API requests/yr on platforms I've built" data-es="Solicitudes API/año en plataformas que construí">API requests/yr on platforms I've built</div>
         </div>
         <div class="stat-card">
           <div class="num">15 yrs</div>
-          <div class="label">Product & data experience</div>
+          <div class="label" data-en="Product &amp; data experience" data-es="Experiencia en producto y datos">Product &amp; data experience</div>
         </div>
         <div class="stat-card">
           <div class="num">3</div>
-          <div class="label">Continents: US, LATAM, EMEA</div>
+          <div class="label" data-en="Continents: US, LATAM, EMEA" data-es="Continentes: EE.UU., LATAM, EMEA">Continents: US, LATAM, EMEA</div>
         </div>
       </div>
     </div>
@@ -392,13 +408,33 @@
 
   <section class="contact" id="contact">
     <div class="contact-inner">
-      <h2>Ready to modernize?</h2>
-      <p>Let's talk about where AI can make the biggest difference in your business.</p>
+      <h2 data-en="Ready to modernize?" data-es="¿Lista para modernizarte?">Ready to modernize?</h2>
+      <p data-en="Let's talk about where AI can make the biggest difference in your business." data-es="Hablemos de dónde la IA puede generar el mayor impacto en tu negocio.">Let's talk about where AI can make the biggest difference in your business.</p>
       <a class="btn btn-primary" href="mailto:anamayra@gmail.com">anamayra@gmail.com</a>
     </div>
   </section>
 
   <footer>&copy; 2026 Ana Zaldivar · azalval.com</footer>
+
+  <script>
+    let lang = 'en';
+
+    function toggleLang() {
+      lang = lang === 'en' ? 'es' : 'en';
+      document.getElementById('langBtn').textContent = lang === 'en' ? 'ES' : 'EN';
+      document.documentElement.lang = lang;
+
+      document.querySelectorAll('[data-en][data-es]').forEach(el => {
+        const val = el.dataset[lang];
+        // h1 and h2 may contain inner HTML (spans)
+        if (el.tagName === 'H1' || el.tagName === 'H2') {
+          el.innerHTML = val;
+        } else {
+          el.textContent = val;
+        }
+      });
+    }
+  </script>
 
 </body>
 </html>
