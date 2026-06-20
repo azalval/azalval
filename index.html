@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ana Zaldivar | AI Business Modernization</title>
+  <title>Ana Zaldivar | Artificial & Human Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -295,6 +295,99 @@
       display: inline-flex;
     }
 
+    /* ── CASE STUDIES CAROUSEL ── */
+    .cases {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5rem 3rem;
+    }
+    .carousel-wrapper {
+      position: relative;
+    }
+    .carousel-track-outer {
+      overflow: hidden;
+      border-radius: 18px;
+    }
+    .carousel-track {
+      display: flex;
+      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .case-card {
+      min-width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 2.5rem;
+      box-sizing: border-box;
+    }
+    .case-img {
+      width: 100%;
+      max-height: 180px;
+      object-fit: contain;
+      margin-bottom: 1.5rem;
+      border-radius: 10px;
+    }
+    .case-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .case-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+      line-height: 1.35;
+    }
+    .case-card p {
+      font-size: 0.925rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 620px;
+    }
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1.25rem;
+    }
+    .carousel-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .carousel-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .carousel-dot.active {
+      background: var(--accent);
+      transform: scale(1.3);
+    }
+    .carousel-arrows {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .carousel-btn {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      color: var(--text);
+    }
+    .carousel-btn:hover { border-color: var(--accent); color: var(--accent); }
+
     /* ── FORM ── */
     .contact-form {
       display: flex;
@@ -383,6 +476,7 @@
     <a class="logo" href="#"><span>az</span>alval</a>
     <ul>
       <li><a href="#services" data-en="Services" data-es="Servicios">Services</a></li>
+      <li><a href="#cases" data-en="Case Studies" data-es="Casos">Case Studies</a></li>
       <li><a href="#about" data-en="About" data-es="Acerca de">About</a></li>
       <li><a href="#contact" class="nav-cta" data-en="Let's talk" data-es="Hablemos">Let's talk</a></li>
       <li><button class="lang-toggle" id="langBtn" onclick="toggleLang()">ES</button></li>
@@ -390,12 +484,12 @@
   </nav>
 
   <section class="hero" id="home">
-    <div class="badge" data-en="AI Consultant" data-es="Consultora de IA">AI Consultant</div>
-    <h1 data-en="I help businesses<br><span class='gradient'>modernize with AI.</span>" data-es="Ayudo a empresas a<br><span class='gradient'>modernizarse con IA.</span>">I help businesses<br><span class="gradient">modernize with AI.</span></h1>
-    <p data-en="Practical AI strategies that streamline operations, reduce manual work, and give your team a real competitive edge." data-es="Estrategias de IA prácticas que optimizan operaciones, reducen el trabajo manual y le dan a tu equipo una verdadera ventaja competitiva.">Practical AI strategies that streamline operations, reduce manual work, and give your team a real competitive edge.</p>
+    <div class="badge" data-en="AI Expert" data-es="Experta en IA">AI Expert</div>
+    <h1 data-en="I help businesses grow<br><span class='gradient'>leveraging Artificial &amp; Human Intelligence.</span>" data-es="Ayudo a empresas a crecer<br><span class='gradient'>con Inteligencia Artificial y Humana.</span>">I help businesses grow<br><span class="gradient">leveraging Artificial &amp; Human Intelligence.</span></h1>
+    <p data-en="Practical AI strategies that streamline operations, reduce manual work, and give your team a real competitive edge — combined with effective product development that translates into measurable financial impact." data-es="Estrategias de IA prácticas que optimizan operaciones, reducen el trabajo manual y dan a tu equipo una ventaja competitiva real — combinadas con un desarrollo de producto efectivo que se traduce en impacto financiero medible.">Practical AI strategies that streamline operations, reduce manual work, and give your team a real competitive edge — combined with effective product development that translates into measurable financial impact.</p>
     <div class="hero-actions">
       <a class="btn btn-primary" href="#contact" data-en="Get in touch →" data-es="Contáctame →">Get in touch →</a>
-      <a class="btn btn-ghost" href="#services" data-en="See what I do" data-es="Lo que hago">See what I do</a>
+      <a class="btn btn-ghost" href="#cases" data-en="See what I've done" data-es="Lo que he logrado">See what I've done</a>
     </div>
   </section>
 
@@ -455,6 +549,64 @@
 
   <div class="divider"></div>
 
+  <section class="cases" id="cases">
+    <p class="section-tag" data-en="Problems Solved" data-es="Problemas Resueltos">Problems Solved</p>
+    <h2 class="section-heading" data-en="Real challenges, real results." data-es="Desafíos reales, resultados reales.">Real challenges, real results.</h2>
+
+    <div class="carousel-wrapper">
+      <div class="carousel-track-outer">
+        <div class="carousel-track" id="carouselTrack">
+
+          <div class="case-card">
+            <img class="case-img" src="img-pricing.svg" alt="Pricing strategy illustration" />
+            <p class="case-tag" data-en="Pricing Strategy · EMEA" data-es="Estrategia de Precios · EMEA">Pricing Strategy · EMEA</p>
+            <h3 data-en="How much to raise cross-border prices in Europe?" data-es="¿Cuánto subir los precios transfronterizos en Europa?">How much to raise cross-border prices in Europe?</h3>
+            <p data-en="Cross-border pricing is a balancing act of regulation, competition, and customer sensitivity. A pricing sensitivity analysis I led identified the optimal price point for European transactions — unlocking $100M+ in incremental annual revenue without losing volume." data-es="Fijar precios internacionales requiere equilibrar regulación, competencia y sensibilidad del cliente. Un análisis que lideré identificó el punto óptimo para transacciones en Europa, generando más de $100M en ingresos incrementales anuales sin perder volumen.">Cross-border pricing is a balancing act of regulation, competition, and customer sensitivity. A pricing sensitivity analysis I led identified the optimal price point for European transactions — unlocking $100M+ in incremental annual revenue without losing volume.</p>
+          </div>
+
+          <div class="case-card">
+            <img class="case-img" src="img-payments.svg" alt="Digital payments illustration" />
+            <p class="case-tag" data-en="Financial Inclusion · LATAM" data-es="Inclusión Financiera · LATAM">Financial Inclusion · LATAM</p>
+            <h3 data-en="A payment page for every micro-business in LATAM — at scale." data-es="Una página de cobro para cada microempresa en LATAM — a escala.">A payment page for every micro-business in LATAM — at scale.</h3>
+            <p data-en="Before AI, getting a professional checkout page required technical skills most micro-business owners didn't have. A GTM strategy I designed brought this capability to underserved SMBs across Latin America, adding $30M in net revenue per year and meaningfully expanding financial inclusion." data-es="Antes de la IA, crear una página de cobro profesional requería habilidades técnicas que la mayoría de microempresarios no tenía. Una estrategia de GTM que diseñé llevó esta capacidad a las PyMEs de América Latina, sumando $30M en ingresos netos anuales y ampliando la inclusión financiera.">Before AI, getting a professional checkout page required technical skills most micro-business owners didn't have. A GTM strategy I designed brought this capability to underserved SMBs across Latin America, adding $30M in net revenue per year and meaningfully expanding financial inclusion.</p>
+          </div>
+
+          <div class="case-card">
+            <img class="case-img" src="img-compliance.svg" alt="Compliance illustration" />
+            <p class="case-tag" data-en="Compliance · Tax · Global" data-es="Cumplimiento · Impuestos · Global">Compliance · Tax · Global</p>
+            <h3 data-en="Compliance is the name of the game — everywhere." data-es="El cumplimiento fiscal es la regla del juego — en todo el mundo.">Compliance is the name of the game — everywhere.</h3>
+            <p data-en="Every growing business must get taxes right, but rules vary by country and mistakes are costly. I led tax data auto-import initiatives at Intuit across Mexico, Brazil, Australia, and France — turning compliance from a blocker into a competitive advantage for SMBs." data-es="Todo negocio en crecimiento debe gestionar bien sus impuestos, pero las reglas varían por país y los errores son costosos. Lideré iniciativas de importación automática de datos fiscales en Intuit para México, Brasil, Australia y Francia, convirtiendo el cumplimiento en una ventaja competitiva para las PyMEs.">Every growing business must get taxes right, but rules vary by country and mistakes are costly. I led tax data auto-import initiatives at Intuit across Mexico, Brazil, Australia, and France — turning compliance from a blocker into a competitive advantage for SMBs.</p>
+          </div>
+
+          <div class="case-card">
+            <img class="case-img" src="img-product.svg" alt="Building a product from scratch illustration" />
+            <p class="case-tag" data-en="Product · 0 to 1 · Growth" data-es="Producto · 0 a 1 · Crecimiento">Product · 0 to 1 · Growth</p>
+            <h3 data-en="Building a new product from scratch? Structure is everything." data-es="¿Construyendo un producto desde cero? La estructura lo es todo.">Building a new product from scratch? Structure is everything.</h3>
+            <p data-en="The 0-to-1 journey is continuous — it demands structure, resilience, solid unit economics, and constant customer feedback. I've done it multiple times across different markets and industries, and I can help you avoid the pitfalls and move faster." data-es="El camino de 0 a 1 es continuo — exige estructura, resiliencia, economías unitarias sólidas y retroalimentación constante del cliente. Lo he hecho múltiples veces en distintos mercados e industrias, y puedo ayudarte a evitar errores y avanzar más rápido.">The 0-to-1 journey is continuous — it demands structure, resilience, solid unit economics, and constant customer feedback. I've done it multiple times across different markets and industries, and I can help you avoid the pitfalls and move faster.</p>
+          </div>
+
+          <div class="case-card">
+            <img class="case-img" src="img-global.svg" alt="Global expansion illustration" />
+            <p class="case-tag" data-en="Localization · AI · Global Expansion" data-es="Localización · IA · Expansión Global">Localization · AI · Global Expansion</p>
+            <h3 data-en="Already have a website in English? Time to tropicalize it." data-es="¿Ya tienes un sitio en inglés? Es hora de tropicalizarlo.">Already have a website in English? Time to tropicalize it.</h3>
+            <p data-en="Entering a new market is more than translating your content — it's adapting your message, tone, and offer to the segment and culture you're trying to reach. AI can dramatically accelerate this localization process, making it practical for any business to feel local everywhere." data-es="Entrar a un nuevo mercado es mucho más que traducir contenido: es adaptar tu mensaje, tono y propuesta al segmento y cultura al que quieres llegar. La IA puede acelerar drásticamente este proceso, haciendo posible que cualquier negocio se sienta local en cualquier parte del mundo.">Entering a new market is more than translating your content — it's adapting your message, tone, and offer to the segment and culture you're trying to reach. AI can dramatically accelerate this localization process, making it practical for any business to feel local everywhere.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="carousel-controls">
+        <div class="carousel-dots" id="carouselDots"></div>
+        <div class="carousel-arrows">
+          <button class="carousel-btn" id="prevBtn" onclick="moveCarousel(-1)">←</button>
+          <button class="carousel-btn" id="nextBtn" onclick="moveCarousel(1)">→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
   <section class="contact" id="contact">
     <div class="contact-inner">
       <h2 data-en="Ready to modernize?" data-es="¿Lista para modernizarte?">Ready to modernize?</h2>
@@ -479,6 +631,37 @@
   <footer>&copy; 2026 Ana Zaldivar · azalval.com</footer>
 
   <script>
+    // ── CAROUSEL ──
+    let current = 0;
+    const track = document.getElementById('carouselTrack');
+    const cards = track.querySelectorAll('.case-card');
+    const dotsContainer = document.getElementById('carouselDots');
+
+    cards.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Slide ' + (i + 1));
+      dot.onclick = () => goTo(i);
+      dotsContainer.appendChild(dot);
+    });
+
+    function goTo(n) {
+      current = (n + cards.length) % cards.length;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      dotsContainer.querySelectorAll('.carousel-dot').forEach((d, i) =>
+        d.classList.toggle('active', i === current));
+    }
+
+    function moveCarousel(dir) { goTo(current + dir); }
+
+    // swipe support
+    let startX = 0;
+    track.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+    track.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) moveCarousel(dx < 0 ? 1 : -1);
+    });
+
     // ── CONTACT FORM ──
     const form = document.getElementById('contactForm');
     form.addEventListener('submit', async (e) => {
