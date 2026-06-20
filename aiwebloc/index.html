@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Case Study: AI-Powered Website Localization · Ana Zaldivar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── GATE ── */
+    #gate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(135deg, #0d0d0d 0%, #1e1b4b 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+      transition: opacity 0.5s ease;
+    }
+    #gate.unlocking { opacity: 0; pointer-events: none; }
+    .gate-box {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+    .gate-logo {
+      font-weight: 800; font-size: 1rem; letter-spacing: -0.03em;
+      text-decoration: none; color: #fff; display: inline-block; margin-bottom: 2rem;
+    }
+    .gate-logo span {
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .gate-box h2 {
+      font-size: 1.4rem; font-weight: 800; letter-spacing: -0.03em;
+      color: #fff; margin-bottom: 0.5rem;
+    }
+    .gate-box p {
+      font-size: 0.875rem; color: rgba(255,255,255,0.5);
+      margin-bottom: 2rem; line-height: 1.6;
+    }
+    .gate-input-wrap { position: relative; margin-bottom: 1rem; }
+    #codeInput {
+      width: 100%;
+      padding: 0.85rem 1.25rem;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+      font-family: inherit; font-size: 0.95rem; letter-spacing: 0.05em;
+      outline: none; text-align: center;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #codeInput::placeholder { color: rgba(255,255,255,0.3); letter-spacing: 0; }
+    #codeInput:focus {
+      border-color: #818cf8;
+      box-shadow: 0 0 0 3px rgba(129,140,248,0.2);
+    }
+    #codeInput.error { border-color: #f87171; box-shadow: 0 0 0 3px rgba(248,113,113,0.2); }
+    #gateBtn {
+      width: 100%; padding: 0.85rem;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff; border: none; border-radius: 10px;
+      font-family: inherit; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s, transform 0.2s;
+    }
+    #gateBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+    #gateBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    #gateError {
+      display: none; color: #fca5a5;
+      font-size: 0.8rem; margin-top: 0.75rem; font-weight: 500;
+    }
+
+    :root {
+      --text:     #0d0d0d;
+      --muted:    #6b7280;
+      --subtle:   #9ca3af;
+      --accent:   #6366f1;
+      --accent-2: #8b5cf6;
+      --border:   #f0f0f0;
+      --surface:  #fafafa;
+      --bg:       #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 3rem;
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: -0.03em;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .logo span {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .back-link {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0d0d0d 0%, #1e1b4b 100%);
+      color: #fff;
+      padding: 6rem 3rem 5rem;
+    }
+    .hero-inner {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .tag-purple { background: rgba(99,102,241,0.3); color: #c7d2fe; }
+    .tag-teal   { background: rgba(20,184,166,0.25); color: #99f6e4; }
+    .tag-date   { color: rgba(255,255,255,0.45); font-size: 0.8rem; font-weight: 500; }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.65);
+      max-width: 600px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 2rem;
+    }
+    .hero-stat .num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-stat .lbl {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.45);
+      margin-top: 0.1rem;
+    }
+
+    /* ── ARTICLE LAYOUT ── */
+    .article {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 4rem 3rem 6rem;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 4rem; }
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .section h2 {
+      font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+    }
+    .section p {
+      color: var(--muted);
+      font-size: 0.975rem;
+      margin-bottom: 1rem;
+      line-height: 1.8;
+    }
+    .section p:last-child { margin-bottom: 0; }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 3.5rem 0;
+    }
+
+    /* ── CALLOUT ── */
+    .callout {
+      background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+      border: 1px solid #e0e7ff;
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.5rem 1.75rem;
+      margin: 1.5rem 0;
+    }
+    .callout p {
+      color: #3730a3 !important;
+      font-weight: 600;
+      font-size: 1rem !important;
+      margin: 0 !important;
+      line-height: 1.6 !important;
+    }
+
+    /* ── PHASE CARDS ── */
+    .phase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    @media (max-width: 600px) { .phase-grid { grid-template-columns: 1fr; } }
+    .phase-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+    }
+    .phase-card.accent {
+      background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+      border-color: #e0e7ff;
+    }
+    .phase-num {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .phase-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      letter-spacing: -0.01em;
+    }
+    .phase-card .invest {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.75rem;
+    }
+    .phase-card ul {
+      list-style: none;
+      padding: 0;
+    }
+    .phase-card ul li {
+      font-size: 0.85rem;
+      color: var(--muted);
+      padding: 0.3rem 0;
+      border-top: 1px solid var(--border);
+      padding-left: 0;
+    }
+    .phase-card ul li:first-child { border-top: none; }
+    .revenue-box {
+      margin-top: 1rem;
+      background: #fff;
+      border: 1px solid #e0e7ff;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      text-align: center;
+    }
+    .revenue-box .rev-num {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .revenue-box .rev-label { font-size: 0.75rem; color: var(--muted); }
+
+    /* ── METRIC CARDS ── */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+    .metric-card .icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .metric-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .metric-card p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; margin: 0; }
+
+    /* ── STEPS ── */
+    .steps { margin: 1.5rem 0; }
+    .step {
+      display: flex;
+      gap: 1.25rem;
+      padding: 1.25rem 0;
+      border-top: 1px solid var(--border);
+    }
+    .step:first-child { border-top: none; }
+    .step-num {
+      width: 32px; height: 32px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 800; color: #fff;
+    }
+    .step p { font-size: 0.9rem; color: var(--muted); margin: 0; line-height: 1.6; }
+    .step p strong { color: var(--text); }
+
+    /* ── DATA PILLS ── */
+    .data-sources {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin: 1.5rem 0;
+    }
+    .data-source {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+    }
+    .data-source .ds-icon {
+      font-size: 1.3rem; flex-shrink: 0; margin-top: 0.1rem;
+    }
+    .data-source h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .data-source p { font-size: 0.85rem; color: var(--muted); margin: 0; line-height: 1.5; }
+
+    /* ── HYPOTHESIS BOX ── */
+    .hypothesis {
+      background: #0d0d0d;
+      color: #fff;
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 1.5rem 0;
+    }
+    .hypothesis .hyp-label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #818cf8; margin-bottom: 0.75rem;
+    }
+    .hypothesis p {
+      color: rgba(255,255,255,0.75) !important;
+      font-size: 0.95rem !important;
+      margin: 0 !important;
+      line-height: 1.7 !important;
+    }
+    .hypothesis strong { color: #c7d2fe; }
+
+    /* ── CTA ── */
+    .cta-box {
+      background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+      border: 1px solid #e0e7ff;
+      border-radius: 20px;
+      padding: 3rem;
+      text-align: center;
+      margin-top: 4rem;
+    }
+    .cta-box h2 {
+      font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.75rem;
+    }
+    .cta-box p { color: var(--muted); margin-bottom: 1.75rem; font-size: 0.975rem; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.8rem 1.6rem; border-radius: 10px;
+      text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(99,102,241,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99,102,241,0.4); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8rem;
+      color: var(--subtle);
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 1.25rem 1.5rem; }
+      .hero { padding: 4rem 1.5rem 3rem; }
+      .article { padding: 3rem 1.5rem 4rem; }
+      .hero-stats { gap: 1.5rem; }
+      .cta-box { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ACCESS GATE -->
+  <div id="gate">
+    <div class="gate-box">
+      <a class="gate-logo" href="../index.html"><span>az</span>alval</a>
+      <h2>Access Required</h2>
+      <p>This case study is private. Enter your access code to continue.</p>
+      <div class="gate-input-wrap">
+        <input id="codeInput" type="password" placeholder="Enter access code"
+               autocomplete="off" spellcheck="false"
+               onkeydown="if(event.key==='Enter') checkCode()" />
+      </div>
+      <button id="gateBtn" onclick="checkCode()">Unlock →</button>
+      <p id="gateError">Incorrect code. Please try again.</p>
+    </div>
+  </div>
+
+  <nav>
+    <a class="logo" href="../index.html"><span>az</span>alval</a>
+    <a class="back-link" href="../index.html#cases">← Back to Case Studies</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-meta">
+        <span class="tag tag-purple">Localization · AI</span>
+        <span class="tag tag-teal">UC Berkeley Capstone · 2024</span>
+        <span class="tag-date">August 29, 2024</span>
+      </div>
+      <h1>AI-Powered Website Localization<br><em>at Scale</em></h1>
+      <p class="hero-sub">How AI can auto-generate personalized, culturally adapted website content for small businesses — eliminating the cost and friction of going global. A strategic proposal developed as the capstone project for UC Berkeley's AI: Business Strategies and Applications program.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">$140M</div><div class="lbl">Incremental revenue potential (p/a)</div></div>
+        <div class="hero-stat"><div class="num">10M</div><div class="lbl">Websites scalable in Phase 2</div></div>
+        <div class="hero-stat"><div class="num">NPS 70+</div><div class="lbl">Target customer satisfaction</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="article">
+
+    <!-- CONTEXT -->
+    <div class="section">
+      <p class="section-label">Context & Problem</p>
+      <h2>Small businesses want to go global. The tools don't make it easy.</h2>
+      <p>MailChimp — an Intuit platform used by millions of SMBs worldwide — already offers AI-powered tools for email campaigns, audience segmentation, and lifecycle automations. But its website builder remained entirely manual, requiring 100% of inputs from users who are rarely web design experts.</p>
+      <p>The gap was even more significant for businesses wanting to reach customers in different countries or languages. Existing options meant hiring a web designer or paying for third-party integrations like Wix or Canva — adding cost and friction that most small businesses can't absorb.</p>
+      <div class="callout">
+        <p>The bigger missed opportunity: MailChimp is connected to QuickBooks, which holds rich transactional data — best-selling products, client demographics, geographic location — none of which was being used to personalize or localize website content.</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- SOLUTION -->
+    <div class="section">
+      <p class="section-label">Solution & Strategy</p>
+      <h2>Auto-generate website content that's personalized, localized, and culturally adapted.</h2>
+      <p>The proposal: add AI capabilities to MailChimp's website builder to automatically generate written content — tailored to the business's industry, target audience, language, and locale. Not just translation. True localization, adapted to segment and culture.</p>
+      <p>The competitive advantage over tools like Wix, Squarespace, or Web.com is the data layer: by combining QuickBooks transactional data with historical email campaign performance, the AI can generate content that reflects what actually sells and resonates — for each market.</p>
+      <p>Implementation in two phases:</p>
+      <div class="phase-grid">
+        <div class="phase-card">
+          <p class="phase-num">Phase 1</p>
+          <h3>Integrate existing GenAI</h3>
+          <p style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem;">Initial Investment</p>
+          <div class="invest">$606K</div>
+          <ul>
+            <li>Embed GPT-X, Llama X, or Anthropic Claude via API</li>
+            <li>Transfer learning per industry/language</li>
+            <li>1 scrum team · 2 months · 4 engineers</li>
+            <li>Test with up to 100K websites</li>
+          </ul>
+          <div class="revenue-box">
+            <div class="rev-num">$500K</div>
+            <div class="rev-label">Introductory revenue @ $5/website</div>
+          </div>
+        </div>
+        <div class="phase-card accent">
+          <p class="phase-num">Phase 2</p>
+          <h3>Build in-house at scale</h3>
+          <p style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem;">Initial Investment</p>
+          <div class="invest">$10M</div>
+          <ul>
+            <li>In-house NLG model on Intuit Assist base</li>
+            <li>~10 engineers, content experts · 4 months</li>
+            <li>$10M cloud storage · $2M marketing</li>
+            <li>Scale to 10 million websites globally</li>
+          </ul>
+          <div class="revenue-box">
+            <div class="rev-num">$140M</div>
+            <div class="rev-label">Annual revenue @ $20/website · 70% conversion</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- TECHNOLOGY -->
+    <div class="section">
+      <p class="section-label">Technology</p>
+      <h2>Two AI models working together to generate content that fits.</h2>
+      <p>For Phase 1, existing transformer-based models (GPT-X, Llama X) are integrated with transfer learning applied per industry, locale, and language. For Phase 2, two custom models work in tandem:</p>
+      <div class="data-sources">
+        <div class="data-source">
+          <div class="ds-icon">🏗️</div>
+          <div>
+            <h4>Template Generation Model</h4>
+            <p>Uses external benchmark data to create structural templates for the target website — layout, sections, word count — adapted by industry and locale.</p>
+          </div>
+        </div>
+        <div class="data-source">
+          <div class="ds-icon">✍️</div>
+          <div>
+            <h4>Content Generation Model</h4>
+            <p>An LLM trained with self-supervised learning generates contextually appropriate text for each template section based on the user's business description, selected locale, best-selling products, and target demographics. A transformer architecture processes each section independently, with multilayer neural networks predicting the complete text.</p>
+          </div>
+        </div>
+      </div>
+      <p>Training objective: minimize the percentage of AI-generated text that users need to edit or regenerate. Human validation (reinforced learning) via web content experts provides quality scoring in the early stages, with in-product NPS feedback taking over once Phase 1 is live.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- DATA -->
+    <div class="section">
+      <p class="section-label">Data</p>
+      <h2>Three sources power the localization engine.</h2>
+      <div class="data-sources">
+        <div class="data-source">
+          <div class="ds-icon">🌐</div>
+          <div>
+            <h4>External Benchmark Data</h4>
+            <p>Trends from similar websites by industry and locale — sourced via public datasets or a proprietary web crawler that categorizes content by industry, language, audience, and section type.</p>
+          </div>
+        </div>
+        <div class="data-source">
+          <div class="ds-icon">📊</div>
+          <div>
+            <h4>User's Business Data</h4>
+            <p>QuickBooks integration provides rich transactional data: best-selling products, client demographics, geographic location, seasonality trends. Email campaign history adds another layer of audience insight.</p>
+          </div>
+        </div>
+        <div class="data-source">
+          <div class="ds-icon">🔬</div>
+          <div>
+            <h4>Synthetic Data via Augmentation</h4>
+            <p>Crawled data is augmented using tools like GPT-X to expand the dataset and prevent overfitting — ensuring each generated website feels distinct, not templated.</p>
+          </div>
+        </div>
+      </div>
+      <p>A multi-parameter key — industry × locale × target audience × website section — links all three sources, enabling the model to predict what content fits each specific context.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- METRICS -->
+    <div class="section">
+      <p class="section-label">Metrics of Success</p>
+      <h2>What good looks like for customers.</h2>
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="icon">⏱️</div>
+          <h4>Time to Publish</h4>
+          <p>Target: reduce website build time from ~4 weeks to under 1 week.</p>
+        </div>
+        <div class="metric-card">
+          <div class="icon">😊</div>
+          <h4>NPS Score</h4>
+          <p>Target: NPS > 70 for the AI-powered builder vs. baseline of ~40.</p>
+        </div>
+        <div class="metric-card">
+          <div class="icon">🖱️</div>
+          <h4>Feature Engagement</h4>
+          <p>&gt;50% feature penetration among customers that are both MC and QBO active.</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- MEASUREMENT -->
+    <div class="section">
+      <p class="section-label">Measurement</p>
+      <h2>Evals first. A/B testing second.</h2>
+      <p>Before any user sees the feature, we validate quality at scale through a structured eval pipeline. Only once outputs clear defined thresholds do we move to live experimentation.</p>
+
+      <!-- EVALS SUBSECTION -->
+      <div style="margin:2rem 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;">
+        <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;">Step 1 — Pre-Launch</p>
+        <h3 style="font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:1rem;">Behavior Spec &amp; Evals</h3>
+        <p style="font-size:0.9rem;color:var(--muted);line-height:1.75;margin-bottom:1.25rem;">The behavior spec is written before any model is trained — it defines what "good" looks like for every combination of locale, device, industry, and audience the AI will encounter. Evals then test the model's outputs against this spec at scale, catching failures before they reach real users.</p>
+
+        <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;">Scenario Matrix</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;margin-bottom:1.5rem;">
+          <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:1rem;">
+            <div style="font-size:1.1rem;margin-bottom:0.4rem;">🌐</div>
+            <p style="font-size:0.8rem;font-weight:700;margin-bottom:0.2rem;">Locale</p>
+            <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;">en-US, es-MX, pt-BR, fr-FR, de-DE — each scored by a native content expert.</p>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:1rem;">
+            <div style="font-size:1.1rem;margin-bottom:0.4rem;">📱</div>
+            <p style="font-size:0.8rem;font-weight:700;margin-bottom:0.2rem;">Device</p>
+            <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;">Web and mobile rendering validated independently — layout, copy length, and tone may differ.</p>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:1rem;">
+            <div style="font-size:1.1rem;margin-bottom:0.4rem;">🏪</div>
+            <p style="font-size:0.8rem;font-weight:700;margin-bottom:0.2rem;">Industry</p>
+            <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;">Retail, food &amp; beverage, professional services, hospitality — each with distinct tone expectations.</p>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:1rem;">
+            <div style="font-size:1.1rem;margin-bottom:0.4rem;">👥</div>
+            <p style="font-size:0.8rem;font-weight:700;margin-bottom:0.2rem;">Audience</p>
+            <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;">B2C vs. B2B, local vs. tourist, age cohort — content adapts to who the business is trying to reach.</p>
+          </div>
+        </div>
+
+        <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;">Eval Types</p>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <div style="display:flex;gap:0.9rem;align-items:flex-start;padding:0.85rem 1rem;background:#fff;border:1px solid var(--border);border-radius:10px;">
+            <span style="font-size:1rem;flex-shrink:0;">🤖</span>
+            <div>
+              <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.15rem;">LLM-as-Judge (automated at scale)</p>
+              <p style="font-size:0.8rem;color:var(--muted);line-height:1.5;">A Claude judge model scores every generated output against the behavior spec criteria — coherence, cultural fit, tone, factual accuracy, and brand safety — across the full scenario matrix. Runs on every model update.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.9rem;align-items:flex-start;padding:0.85rem 1rem;background:#fff;border:1px solid var(--border);border-radius:10px;">
+            <span style="font-size:1rem;flex-shrink:0;">👩‍💼</span>
+            <div>
+              <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.15rem;">Human Eval (locale experts)</p>
+              <p style="font-size:0.8rem;color:var(--muted);line-height:1.5;">Native-speaking content experts rate a sampled subset per locale for naturalness, cultural appropriateness, and whether a local customer would trust the site. Human scores calibrate and validate the automated judge.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.9rem;align-items:flex-start;padding:0.85rem 1rem;background:#fff;border:1px solid var(--border);border-radius:10px;">
+            <span style="font-size:1rem;flex-shrink:0;">🔁</span>
+            <div>
+              <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.15rem;">Regression Suite</p>
+              <p style="font-size:0.8rem;color:var(--muted);line-height:1.5;">A fixed set of golden test cases — one per locale × device × industry combination — runs before every deployment. Any quality drop below the defined threshold blocks the release.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:1.25rem;background:linear-gradient(135deg,#eef2ff,#f5f3ff);border:1px solid #e0e7ff;border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:0.75rem;">
+          <span style="font-size:1rem;">✅</span>
+          <p style="font-size:0.85rem;color:#3730a3;font-weight:600;margin:0;line-height:1.5;"><strong>Gate to A/B:</strong> Minimum eval score of 80% across all locale × device combinations required before proceeding to live testing.</p>
+        </div>
+      </div>
+
+      <!-- A/B TESTING SUBSECTION -->
+      <div style="margin:2rem 0 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;">
+        <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;">Step 2 — Live Experiment</p>
+        <h3 style="font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:1rem;">A/B Testing Framework</h3>
+        <p style="font-size:0.9rem;color:var(--muted);line-height:1.75;margin-bottom:1.25rem;">Phase 1 launches with a Test cohort of 1,000 websites invited to use the AI-powered builder at a $5 introductory fee, compared to a Control cohort matched by industry, language, and tenure. The experiment runs for 12 weeks with weekly cohort additions to reach statistical significance.</p>
+        <div class="hypothesis">
+          <div class="hyp-label">Hypothesis</div>
+          <p>The Test cohort with access to the AI-powered website builder will <strong>reduce build time by more than 50%</strong> (from ~4 weeks to under 1 week) and achieve a <strong>satisfaction score 50% higher</strong> than the Control group (NPS from 40 to +60).</p>
+        </div>
+        <p style="font-size:0.9rem;color:var(--muted);line-height:1.75;margin-top:1.25rem;">A secondary experiment tests Willingness to Pay to calibrate final pricing before the full rollout.</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- HUMANS & AI -->
+    <div class="section">
+      <p class="section-label">Humans & AI</p>
+      <h2>The right team, and the right ethics.</h2>
+      <p>Phase 2 requires a dedicated division: Data Scientists, Software Engineers, Content Experts, Product Managers, UX Designers, and a Policy & Governance team to ensure the models are human-safe, PII-compliant, and plagiarism-free.</p>
+      <p>An important ethical consideration: this feature could impact Web Designers' market relevance. The positioning must be clear — AI accelerates their work, not replaces it.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- NEXT STEPS -->
+    <div class="section">
+      <p class="section-label">Next Steps</p>
+      <h2>The roadmap forward.</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <p><strong>Run Phase 1 for 12 weeks</strong> — collect data and feedback weekly, reinforce models based on learnings.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <p><strong>Kick off Phase 2 development</strong> using Phase 1 insights — estimated 6–9 months to first POC.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <p><strong>Evaluate Phase 1 continuation</strong> while Phase 2 is being built, based on cost vs. benefit analysis.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <p><strong>Plan Phase 3:</strong> Build in-house Computer Vision models to auto-generate visual assets for websites.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <p><strong>Evaluate broader AI opportunities</strong> across the full marketing lifecycle — campaigns, targeting, analytics.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-box">
+      <h2>Want to apply this to your business?</h2>
+      <p>Whether you're entering a new market or trying to make your existing site truly local — let's talk about how AI can get you there faster.</p>
+      <a class="btn btn-primary" href="../index.html#contact">Get in touch →</a>
+    </div>
+
+  </div>
+
+  <footer>&copy; 2026 Ana Zaldivar · azalval.com</footer>
+
+  <script>
+    // ── SUPABASE ──
+    const SUPABASE_URL  = 'https://omletgvnkwgsjevuipfw.supabase.co';
+    const SUPABASE_KEY  = 'sb_publishable_8VAHf9T_5R9MPBwjiwg4Hg_FdTuqCd2';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ── GATE ──
+    async function checkCode() {
+      const input = document.getElementById('codeInput');
+      const btn   = document.getElementById('gateBtn');
+      const err   = document.getElementById('gateError');
+      const code  = input.value.trim();
+
+      if (!code) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Checking…';
+      err.style.display = 'none';
+      input.classList.remove('error');
+
+      // Validate against Supabase access_codes table
+      const { data, error } = await sb
+        .from('access_codes')
+        .select('id')
+        .eq('code', code)
+        .eq('active', true)
+        .maybeSingle();
+
+      const success = !!data && !error;
+
+      // Log the attempt
+      await sb.from('access_log').insert({ success, code_used: code });
+
+      if (success) {
+        // Unlock — fade out gate
+        const gate = document.getElementById('gate');
+        gate.classList.add('unlocking');
+        setTimeout(() => gate.remove(), 500);
+      } else {
+        input.classList.add('error');
+        err.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Unlock →';
+        input.value = '';
+        input.focus();
+      }
+    }
+  </script>
+
+</body>
+</html>
