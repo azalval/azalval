@@ -7,7 +7,61 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    /* ── GATE ── */
+    #gate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(135deg, #0d0d0d 0%, #1a2744 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+      transition: opacity 0.5s ease;
+    }
+    #gate.unlocking { opacity: 0; pointer-events: none; }
+    .gate-box {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      width: 100%; max-width: 400px;
+      text-align: center;
+    }
+    .gate-logo {
+      display: inline-block; font-weight: 800; font-size: 1.1rem;
+      letter-spacing: -0.03em; text-decoration: none; color: #fff; margin-bottom: 1.75rem;
+    }
+    .gate-logo span {
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .gate-box h2 { font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
+    .gate-box > p { font-size: 0.875rem; color: rgba(255,255,255,0.5); margin-bottom: 1.5rem; line-height: 1.6; }
+    .gate-input-wrap { margin-bottom: 0.75rem; }
+    #codeInput {
+      width: 100%; padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px; color: #fff; font-size: 1rem;
+      font-family: inherit; outline: none; text-align: center;
+      letter-spacing: 0.05em; transition: border-color 0.2s;
+    }
+    #codeInput::placeholder { color: rgba(255,255,255,0.3); letter-spacing: 0; }
+    #codeInput:focus { border-color: rgba(129,140,248,0.6); }
+    #codeInput.error { border-color: #f87171; }
+    #gateBtn {
+      width: 100%; padding: 0.85rem;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff; border: none; border-radius: 10px;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: opacity 0.2s;
+    }
+    #gateBtn:hover { opacity: 0.9; }
+    #gateBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+    #gateError {
+      display: none; margin-top: 0.75rem;
+      font-size: 0.8rem; color: #f87171;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -73,9 +127,14 @@
     .hero {
       background: linear-gradient(135deg, #0d0d0d 0%, #1a2744 100%);
       color: #fff;
-      padding: 6rem clamp(1.25rem, 5vw, 3rem) 5rem;
+      padding: 6rem 0 5rem;
     }
-    .hero-inner { max-width: 975px; width: 100%; margin: 0 auto; }
+    .hero-inner {
+      max-width: 975px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 clamp(1.25rem, 5vw, 3rem);
+    }
     .hero-meta {
       display: flex;
       align-items: center;
@@ -376,22 +435,45 @@
       border-radius: 16px;
       padding: 1.75rem;
       margin: 1.5rem 0;
+      overflow-x: auto;
     }
     .insight-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; }
-    .insight-row {
-      display: grid;
-      grid-template-columns: 1fr 80px 80px;
-      align-items: center;
-      padding: 0.65rem 0;
-      border-top: 1px solid var(--border);
-      font-size: 0.85rem;
+    .insight-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      min-width: 680px;
     }
-    .insight-row:first-of-type { border-top: none; }
-    .insight-row .label { color: var(--muted); }
-    .insight-row .val { font-weight: 700; text-align: right; }
-    .insight-row .val.good { color: #059669; }
-    .insight-row .val.warn { color: #d97706; }
-    .insight-row .val.bad  { color: #dc2626; }
+    .insight-table thead tr { border-bottom: 2px solid var(--border); }
+    .insight-table thead th {
+      padding: 0.5rem 0.65rem;
+      text-align: right;
+      font-weight: 600;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .insight-table thead th:first-child { text-align: left; }
+    .insight-table tbody tr { border-top: 1px solid var(--border); }
+    .insight-table tbody tr.total-row {
+      background: #052e16;
+      color: #fff;
+    }
+    .insight-table tbody tr.total-row td { color: #fff; font-weight: 700; }
+    .insight-table tbody tr:not(.total-row):hover { background: #f9fafb; }
+    .insight-table td {
+      padding: 0.6rem 0.65rem;
+      text-align: right;
+      white-space: nowrap;
+      color: var(--muted);
+    }
+    .insight-table td:first-child { text-align: left; color: var(--text); font-weight: 600; }
+    .insight-table .g { color: #059669; font-weight: 700; }
+    .insight-table .r { color: #dc2626; font-weight: 700; }
+    .insight-table .b { font-weight: 700; color: var(--text); }
+    .insight-table .total-row .g { color: #86efac; }
+    .insight-table .total-row .r { color: #fca5a5; }
 
     /* ── COMPARISON GRID ── */
     .compare-grid {
@@ -560,7 +642,7 @@
 
     @media (max-width: 600px) {
       nav { padding: 1.25rem 1.5rem; }
-      .hero { padding: 4rem 1.5rem 3rem; }
+      .hero { padding: 4rem 0 3rem; }
       .article { padding: 3rem 1.5rem 4rem; }
       .hero-stats { gap: 1.5rem; }
       .cta-box { padding: 2rem 1.5rem; }
@@ -569,6 +651,21 @@
   </style>
 </head>
 <body>
+
+  <div id="gate">
+    <div class="gate-box">
+      <a class="gate-logo" href="../index.html"><span>az</span>alval</a>
+      <h2>Access Required</h2>
+      <p>This case study is private. Enter your access code to continue.</p>
+      <div class="gate-input-wrap">
+        <input id="codeInput" type="password" placeholder="Enter access code"
+               autocomplete="off" spellcheck="false"
+               onkeydown="if(event.key==='Enter') checkCode()" />
+      </div>
+      <button id="gateBtn" onclick="checkCode()">Unlock →</button>
+      <p id="gateError">Incorrect code. Please try again.</p>
+    </div>
+  </div>
 
   <nav>
     <a class="logo" href="../index.html"><span>az</span>alval</a>
@@ -587,7 +684,7 @@
       <p class="hero-sub">How building tax compliance into the core of QuickBooks Mexico — from CFDI stamping to AI-powered fiscal automation — became the primary lever for product-market fit, retention, and growth in a complex regulatory market.</p>
       <div class="hero-stats">
         <div class="hero-stat"><div class="num">21.7M</div><div class="lbl">SMB total addressable market in Mexico</div></div>
-        <div class="hero-stat"><div class="num">$12.8K <span style="font-size:0.55em;font-weight:600;opacity:0.7;">MXN</span></div><div class="lbl">Avg. annual cost per SMB paid to accountants</div></div>
+        <div class="hero-stat"><div class="num">~$2K <span style="font-size:0.55em;font-weight:600;opacity:0.7;">USD</span></div><div class="lbl">Avg. annual cost per SMB paid to accountants</div></div>
         <div class="hero-stat"><div class="num">70%</div><div class="lbl">12-month retention target at PMF</div></div>
         <div class="hero-stat"><div class="num">16–20hrs</div><div class="lbl">Monthly compliance time lost per business</div></div>
       </div>
@@ -601,7 +698,7 @@
       <p class="section-label">Context & Problem</p>
       <h2>In Mexico, compliance isn't optional — and it's brutal to manage manually.</h2>
       <p>Every formal business in Mexico must navigate a rigorous fiscal system administered by the SAT (Servicio de Administración Tributaria): issue SAT-certified electronic invoices (CFDIs), calculate and file monthly ISR (income tax) and IVA (VAT), manage payroll compliance with stamped payslips across 30+ required fields, and submit electronic accounting reports. Mistakes mean fines. Delays mean audits.</p>
-      <p>Despite this, small business owners were managing all of it manually — across spreadsheets, third-party invoicing tools, and a slow, complex SAT portal — spending 16 to 20 hours every month just to stay compliant. Those who could afford it outsourced to an accountant, paying <strong>$12.8K USD per year</strong> for the privilege.</p>
+      <p>Despite this, small business owners were managing all of it manually — across spreadsheets, third-party invoicing tools, and a slow, complex SAT portal — spending 16 to 20 hours every month just to stay compliant. Those who could afford it outsourced to an accountant, paying <strong>up to $2K USD per year</strong> for the privilege.</p>
       <div class="callout">
         <p>"I'm trying to have visibility of my business to make the right decisions. But it takes 16–20 hours a month to manually input and consolidate all data. Because all my financial data is spread out in different tools and spreadsheets — which makes me feel helpless and lost."</p>
       </div>
@@ -625,12 +722,13 @@
 
       <p>Industries in scope: digital agencies, legal services, architecture & design, fintechs, photo & video studios. Their clients always require a factura — making them naturally highly compliant and invoice-heavy. They use mostly digital payments, hire external accountants, and are project-based. In short: they desperately needed a better tool, and they had money to pay for it.</p>
 
-      <div class="customer-card">
-        <h3>The Monthly Compliance Journey — 4 Jobs Every Business Must Complete</h3>
-        <p><strong>1 · Compliant Sales</strong> — Issue SAT-certified CFDIs (e-invoices) at every transaction.<br/>
-        <strong>2 · Compliant Expenses</strong> — Collect and store compliant receipts and proof of payment.<br/>
-        <strong>3 · Compliant Payroll</strong> — Prepare payroll, issue stamped payslips (30 mandatory fields), pay labour taxes.<br/>
-        <strong>4 · Close the Month</strong> — Reconcile bank accounts, calculate ISR/IVA, file electronically with SAT, pay taxes.</p>
+      <div style="border-radius:16px; overflow:hidden; border:1px solid var(--border); margin:1.5rem 0;">
+        <iframe
+          src="compliance-journey.html"
+          style="width:100%; height:620px; border:none; display:block;"
+          scrolling="no"
+          title="Monthly Compliance Journey"
+        ></iframe>
       </div>
 
       <p>At launch, most of these steps were either fully handled by an accountant or done manually by the business owner across disconnected tools. The core unsolved pain points were cash flow visibility and bank reconciliation — areas where no single tool had a clear winner.</p>
@@ -730,7 +828,7 @@
             <span class="step-vp">Value prop: Look professional with personalized invoices</span>
           </div>
         </div>
-        <div class="roadmap-step active">
+        <div class="roadmap-step">
           <div class="step-stage">
             <div class="step-badge">Stage 3</div>
           </div>
@@ -752,12 +850,12 @@
         </div>
         <div class="roadmap-step">
           <div class="step-stage">
-            <div class="step-badge">Stage 5</div>
+            <div class="step-badge">Vision</div>
           </div>
           <div class="step-content">
-            <h4>AI-Powered Fiscal Intelligence (FiscalIA)</h4>
-            <p>An AI-powered fiscal dashboard that auto-imports SAT data, pre-fills monthly declarations (ISR + IVA), flags anomalies (pending CFDI cancelations, incorrect usage codes), calculates optimal tax liability, and submits directly to SAT via e-firma. Turns a 20-hour monthly ordeal into a 10-minute review.</p>
-            <span class="step-vp">Value prop: Optimize cash flow and grow your business</span>
+            <h4>Full Tax Automation</h4>
+            <p>The long-term vision: a fully automated solution that auto-imports all SAT-related transactions, pre-calculates ISR and IVA, and files taxes directly to SAT via e-firma — with no manual input required. What used to be a 20-hour monthly ordeal becomes a 10-minute review, with the peace of mind that every transaction has been checked, reconciled, and confirmed by the system.</p>
+            <span class="step-vp">Value prop: Stay compliant, effortlessly — focus on your business, not your taxes</span>
           </div>
         </div>
       </div>
@@ -769,38 +867,88 @@
     <div class="section">
       <p class="section-label">Key Insights</p>
       <h2>The data proved the thesis: compliance adoption drives retention.</h2>
-      <p>The most important finding from the product data: customers who adopted more than one compliance job in QuickBooks showed dramatically higher retention and NPS — and customers who only invoiced, without adopting additional jobs, had the highest churn probability.</p>
+      <p>The most important finding from the product data: customers who adopted more than one compliance job in QuickBooks showed dramatically higher retention and PRS — and customers who only invoiced, without adopting additional jobs, had the highest churn probability.</p>
 
       <div class="insight-card">
         <h3>Retention & PRS by Customer Tenure</h3>
-        <div class="insight-row" style="font-weight:600; color:var(--muted); font-size:0.78rem; letter-spacing:0.03em;">
-          <span>Segment</span>
-          <span style="text-align:right;">PRS</span>
-          <span style="text-align:right;">Active Use</span>
-        </div>
-        <div class="insight-row">
-          <span class="label">>12 months tenure</span>
-          <span class="val good">54</span>
-          <span class="val good">81%</span>
-        </div>
-        <div class="insight-row">
-          <span class="label">4–12 months tenure</span>
-          <span class="val">37</span>
-          <span class="val">76%</span>
-        </div>
-        <div class="insight-row">
-          <span class="label">&lt;90 days tenure</span>
-          <span class="val warn">29</span>
-          <span class="val">78%</span>
-        </div>
-        <div class="insight-row">
-          <span class="label">Churned subscribers</span>
-          <span class="val bad">N/A</span>
-          <span class="val bad">9%</span>
-        </div>
+        <table class="insight-table">
+          <thead>
+            <tr>
+              <th>Segment</th>
+              <th>PRS</th>
+              <th>Monthly Active</th>
+              <th>Invoice &amp; Stamp</th>
+              <th>Add Expense</th>
+              <th>Add Report</th>
+              <th>Register Employees</th>
+              <th>Connect Bank</th>
+              <th>Import CFDIs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="total-row">
+              <td>Total Actives</td>
+              <td class="g">41</td>
+              <td class="g">78%</td>
+              <td>49%</td>
+              <td>53%</td>
+              <td>34%</td>
+              <td>35%</td>
+              <td>22%</td>
+              <td>19%</td>
+            </tr>
+            <tr>
+              <td>&gt;12 months tenure</td>
+              <td class="g">54</td>
+              <td class="g">81%</td>
+              <td class="g">56%</td>
+              <td class="g">70%</td>
+              <td class="g">53%</td>
+              <td class="g">51%</td>
+              <td>26%</td>
+              <td class="r">15%</td>
+            </tr>
+            <tr>
+              <td>4–12 months tenure</td>
+              <td class="b">37</td>
+              <td class="b">76%</td>
+              <td class="g">59%</td>
+              <td class="g">56%</td>
+              <td>32%</td>
+              <td>35%</td>
+              <td>24%</td>
+              <td>25%</td>
+            </tr>
+            <tr>
+              <td>&lt;90 days tenure</td>
+              <td class="r">29</td>
+              <td class="b">78%</td>
+              <td class="r">27%</td>
+              <td>30%</td>
+              <td class="r">15%</td>
+              <td class="r">19%</td>
+              <td class="r">15%</td>
+              <td class="r">17%</td>
+            </tr>
+            <tr>
+              <td>Churned subscribers</td>
+              <td>N/A</td>
+              <td class="r">9%</td>
+              <td class="r">13%</td>
+              <td>31%</td>
+              <td class="r">12%</td>
+              <td>29%</td>
+              <td class="r">13%</td>
+              <td class="r">5%</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.72rem; color:var(--subtle); margin-top:0.85rem; line-height:1.5;">
+          * <strong>PRS</strong> (Product Recommendation Score) — Intuit's in-product equivalent of NPS, prompted directly inside the app at key moments rather than via external survey. A PRS above 40 is considered a strong signal of product-market fit.
+        </p>
       </div>
 
-      <p>The clearest signal: <strong>56% of the active base</strong> was invoicing every month and had adopted 3 core compliance jobs (expenses, reporting, managing employees) — and this group had a PRS above 40. Meanwhile, <strong>27% who only invoiced</strong> with no additional job adoption had the highest probability of churn. The prescription was obvious: accelerate adoption of the full compliance journey.</p>
+      <p>The clearest signal came from the <strong>cohort with more than 12 months of tenure</strong> (PRS 54): those who had adopted 3 or more compliance jobs — invoicing, expenses, reporting, and employee management — showed 81% monthly active use and the strongest retention of any segment. In contrast, the <strong>&lt;90 days cohort</strong> (PRS 29) showed low adoption across nearly every job beyond basic invoicing, and the churned base had critically low engagement across all features. The prescription was clear: accelerate adoption of the full compliance journey beyond the first invoice stamp.</p>
 
       <div class="callout">
         <p>12-month retention for customers who adopted multiple compliance jobs was 2× higher than for invoice-only users. Every additional compliance job adopted was a signal of PMF — not just engagement.</p>
@@ -905,34 +1053,47 @@
       <p>Six of the ten dimensions are identical across all four markets — mandatory e-invoicing, an authorized third-party validator, digital signatures, structured formats, embedded tax, and archiving requirements. The infrastructure pattern QBO built for Mexico — a PAC integration layer, a compliant XML generator, and a certified archiving system — is directly replicable in Brazil, France, and India with market-specific adapters. Compliance isn't a local problem. It's a global product opportunity.</p>
     </div>
 
-    <hr class="divider" />
-
-    <!-- FISCALIA -->
-    <div class="section">
-      <p class="section-label">The Vision in Practice</p>
-      <h2>FiscalIA — what the end state looks like.</h2>
-      <p>FiscalIA is a prototype of the Stage 5 vision: an AI-powered fiscal dashboard for PFAE (Persona Física con Actividad Empresarial) business owners. It auto-imports income and expense data from SAT, pre-fills monthly ISR and IVA declarations, flags anomalies before they become compliance risks, and can submit declarations and manage payment — all in a single session.</p>
-      <p>It's the answer to the original customer problem: a system that does it all for you, so you can make decisions with confidence — instead of spending 20 hours a month just staying compliant.</p>
-
-      <div class="demo-box">
-        <div class="demo-box-text">
-          <h3>Live prototype: FiscalIA PFAE Dashboard</h3>
-          <p>See the full AI-powered fiscal dashboard — income tracking, CFDI management, ISR/IVA calculation, and SAT filing in one place.</p>
-        </div>
-        <a class="demo-btn" href="https://azalval.github.io/tax_solution_mx/" target="_blank" rel="noopener">View live demo →</a>
-      </div>
-    </div>
-
-    <!-- CTA -->
-    <div class="cta-box">
-      <h2>Building in a regulated market?</h2>
-      <p>Compliance-first product strategy is one of the most powerful — and underestimated — paths to PMF. Let's talk about how to turn a regulatory burden into a competitive moat for your business.</p>
-      <a class="btn btn-primary" href="../index.html#contact">Get in touch →</a>
-    </div>
-
   </div>
 
   <footer>&copy; 2026 Ana Zaldivar · azalval.com</footer>
+
+  <script>
+    const SUPABASE_URL = 'https://omletgvnkwgsjevuipfw.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_8VAHf9T_5R9MPBwjiwg4Hg_FdTuqCd2';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function checkCode() {
+      const input = document.getElementById('codeInput');
+      const btn   = document.getElementById('gateBtn');
+      const err   = document.getElementById('gateError');
+      const code  = input.value.trim();
+      if (!code) return;
+      btn.disabled = true;
+      btn.textContent = 'Checking…';
+      err.style.display = 'none';
+      input.classList.remove('error');
+      const { data, error } = await sb
+        .from('access_codes')
+        .select('id')
+        .eq('code', code)
+        .eq('active', true)
+        .maybeSingle();
+      const success = !!data && !error;
+      await sb.from('access_log').insert({ success, code_used: code });
+      if (success) {
+        const gate = document.getElementById('gate');
+        gate.classList.add('unlocking');
+        setTimeout(() => gate.remove(), 500);
+      } else {
+        input.classList.add('error');
+        err.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Unlock →';
+        input.value = '';
+        input.focus();
+      }
+    }
+  </script>
 
 </body>
 </html>
