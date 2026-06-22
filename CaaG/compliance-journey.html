@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Monthly Compliance Journey</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #fff; padding: 40px 24px; }
+
+  .mcj { max-width: 860px; margin: 0 auto; }
+
+  .mcj-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #1e3a6e; margin-bottom: 8px; }
+  .mcj-headline { font-size: 32px; font-weight: 700; color: #0f2a52; line-height: 1.2; margin-bottom: 10px; }
+  .mcj-sub { font-size: 15px; color: #6b7280; line-height: 1.6; margin-bottom: 28px; max-width: 560px; }
+
+
+  .steps-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+
+  .step-card {
+    border-radius: 12px;
+    border: 1.5px solid transparent;
+    padding: 14px 12px;
+    cursor: pointer;
+    transition: border-color .25s, background .25s, transform .2s;
+  }
+  .step-card:hover { transform: translateY(-2px); }
+
+  .step-num { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+  .step-name { font-size: 13px; font-weight: 700; color: #111827; line-height: 1.35; margin-bottom: 4px; }
+  .step-tag { font-size: 11px; color: #6b7280; }
+
+  .step-card.s0 { border-color: #bcd0f0; background: #eef4fc; }
+  .step-card.s0 .step-num { color: #1e3a6e; }
+  .step-card.s1 { border-color: #f4c0b3; background: #fdf0ec; }
+  .step-card.s1 .step-num { color: #9a3620; }
+  .step-card.s2 { border-color: #c5b8f0; background: #f0edfb; }
+  .step-card.s2 .step-num { color: #4a2fa0; }
+  .step-card.s3 { border-color: #9fddc4; background: #e8f8f2; }
+  .step-card.s3 .step-num { color: #0f6044; }
+
+  .step-card.active.s0 { border-color: #1e3a6e; background: #dbe8f8; }
+  .step-card.active.s1 { border-color: #c0392b; background: #fde0d8; }
+  .step-card.active.s2 { border-color: #5b3abf; background: #e4dff8; }
+  .step-card.active.s3 { border-color: #0f6044; background: #d4f4e6; }
+
+  .detail-panel {
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    padding: 24px;
+    min-height: 190px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .detail-slide {
+    position: absolute; inset: 0; padding: 24px;
+    opacity: 0; transform: translateY(12px);
+    transition: opacity .4s cubic-bezier(.4,0,.2,1), transform .4s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
+  }
+  .detail-slide.active { opacity: 1; transform: translateY(0); pointer-events: auto; position: relative; }
+  .detail-slide.exit { opacity: 0; transform: translateY(-12px); }
+
+  .d-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; }
+  .d-title { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 12px; }
+  .hours-strip { display: flex; gap: 16px; margin-bottom: 16px; }
+  .hours-pill { display: flex; flex-direction: column; }
+  .hours-num { font-size: 36px; font-weight: 700; line-height: 1; }
+  .hours-label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #6b7280; margin-top: 3px; }
+  .d-tasks { display: flex; flex-direction: column; gap: 8px; }
+  .d-task { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #374151; line-height: 1.5; }
+  .d-task-icon { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+
+  .d0 .d-label { color: #1e3a6e; }
+  .d0 .d-task-icon { background: #dbe8f8; color: #1e3a6e; }
+  .d1 .d-label { color: #9a3620; }
+  .d1 .d-task-icon { background: #fde0d8; color: #9a3620; }
+  .d2 .d-label { color: #4a2fa0; }
+  .d2 .d-task-icon { background: #e4dff8; color: #4a2fa0; }
+  .d3 .d-label { color: #0f6044; }
+  .d3 .d-task-icon { background: #d4f4e6; color: #0f6044; }
+
+  .footer-bar {
+    margin-top: 14px;
+    background: #fff0ee;
+    border: 1px solid #f4c0b3;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: #7a2010;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .footer-bar strong { color: #b83a20; }
+
+  .nav-row { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
+  .dots2 { display: flex; gap: 7px; }
+  .dot2 { width: 7px; height: 7px; border-radius: 50%; background: #d1d5db; cursor: pointer; transition: background .25s, transform .25s; }
+  .dot2.active { transform: scale(1.4); }
+  .dot2.active.s0 { background: #1e3a6e; }
+  .dot2.active.s1 { background: #c0392b; }
+  .dot2.active.s2 { background: #5b3abf; }
+  .dot2.active.s3 { background: #0f6044; }
+  .nav-btns { display: flex; gap: 8px; }
+  .nav-btn2 { width: 32px; height: 32px; border-radius: 50%; border: 1px solid #d1d5db;
+    background: #fff; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: #6b7280; }
+  .nav-btn2:hover { border-color: #374151; color: #111827; }
+</style>
+</head>
+<body>
+
+<div class="mcj">
+  <div class="mcj-eyebrow">Monthly Compliance Journey</div>
+  <div class="mcj-headline">4 jobs every business must complete</div>
+
+
+
+  <div class="steps-row">
+    <div class="step-card s0 active" onclick="goTo(0)" id="card0">
+      <div class="step-num">Job 1</div>
+      <div class="step-name">Compliant Sales</div>
+      <div class="step-tag">Daily · Invoices (stamped)</div>
+    </div>
+    <div class="step-card s1" onclick="goTo(1)" id="card1">
+      <div class="step-num">Job 2</div>
+      <div class="step-name">Compliant Expenses</div>
+      <div class="step-tag">Weekly · Receipts</div>
+    </div>
+    <div class="step-card s2" onclick="goTo(2)" id="card2">
+      <div class="step-num">Job 3</div>
+      <div class="step-name">Compliant Payroll</div>
+      <div class="step-tag">Bi-weekly · 30 fields</div>
+    </div>
+    <div class="step-card s3" onclick="goTo(3)" id="card3">
+      <div class="step-num">Job 4</div>
+      <div class="step-name">Close the Month</div>
+      <div class="step-tag">Monthly · Tax filing and payment</div>
+    </div>
+  </div>
+
+  <div class="detail-panel">
+    <div class="detail-slide d0 active" id="d0">
+      <div class="d-label">Job 1 — Compliant Sales</div>
+      <div class="hours-strip"><div class="hours-pill"><span class="hours-num" style="color:#1e3a6e;">4h</span><span class="hours-label">Owner/mo</span></div><div class="hours-pill"><span class="hours-num" style="color:#9ca3af;">0h</span><span class="hours-label">Accountant/mo</span></div></div><div class="d-title">Issue SAT-certified Invoices (stamped) at every transaction</div>
+      <div class="d-tasks">
+        <div class="d-task"><div class="d-task-icon">1</div><span>Generate and stamp a CFDI 4.0 invoice for every sale — digitally signed by a PAC (authorized certifier).</span></div>
+        <div class="d-task"><div class="d-task-icon">2</div><span>Deliver the XML + PDF to the customer; retain your copy for 5 years per SAT rules.</span></div>
+        <div class="d-task"><div class="d-task-icon">3</div><span>Handle cancellations with a substitute CFDI when needed — requires customer acknowledgement.</span></div>
+      </div>
+    </div>
+    <div class="detail-slide d1" id="d1">
+      <div class="d-label">Job 2 — Compliant Expenses</div>
+      <div class="hours-strip"><div class="hours-pill"><span class="hours-num" style="color:#9a3620;">4h</span><span class="hours-label">Owner/mo</span></div><div class="hours-pill"><span class="hours-num" style="color:#9ca3af;">0h</span><span class="hours-label">Accountant/mo</span></div></div><div class="d-title">Collect and store compliant receipts and proof of payment</div>
+      <div class="d-tasks">
+        <div class="d-task"><div class="d-task-icon">1</div><span>Collect a valid CFDI from every supplier — paper receipts are not deductible.</span></div>
+        <div class="d-task"><div class="d-task-icon">2</div><span>Verify each CFDI against the SAT portal to confirm it is genuine and not cancelled.</span></div>
+        <div class="d-task"><div class="d-task-icon">3</div><span>Store proof of payment (bank transfer or CFDI de pago) linked to each expense CFDI.</span></div>
+      </div>
+    </div>
+    <div class="detail-slide d2" id="d2">
+      <div class="d-label">Job 3 — Compliant Payroll</div>
+      <div class="hours-strip"><div class="hours-pill"><span class="hours-num" style="color:#4a2fa0;">7h</span><span class="hours-label">Owner/mo</span></div><div class="hours-pill"><span class="hours-num" style="color:#4a2fa0;">4h</span><span class="hours-label">Accountant/mo</span></div></div><div class="d-title">Prepare payroll, issue stamped payslips, pay labour taxes</div>
+      <div class="d-tasks">
+        <div class="d-task"><div class="d-task-icon">1</div><span>Calculate gross pay, ISR withholding, IMSS, and INFONAVIT for each employee per period.</span></div>
+        <div class="d-task"><div class="d-task-icon">2</div><span>Stamp a CFDI de Nómina (30 mandatory fields) for every payslip via a PAC before payment.</span></div>
+        <div class="d-task"><div class="d-task-icon">3</div><span>Pay IMSS and INFONAVIT contributions by the deadline — penalties apply from day one.</span></div>
+      </div>
+    </div>
+    <div class="detail-slide d3" id="d3">
+      <div class="d-label">Job 4 — Close the Month</div>
+      <div class="hours-strip"><div class="hours-pill"><span class="hours-num" style="color:#0f6044;">10h</span><span class="hours-label">Owner/mo</span></div><div class="hours-pill"><span class="hours-num" style="color:#0f6044;">10h</span><span class="hours-label">Accountant/mo</span></div></div><div class="d-title">Reconcile, calculate ISR/IVA, file with SAT, pay taxes</div>
+      <div class="d-tasks">
+        <div class="d-task"><div class="d-task-icon">1</div><span>Reconcile bank statements against all issued and received Invoices (stamped) — flag every gap.</span></div>
+        <div class="d-task"><div class="d-task-icon">2</div><span>Calculate ISR (progressive table) and IVA (16% net) using the period's income and deductions.</span></div>
+        <div class="d-task"><div class="d-task-icon">3</div><span>File the Declaración Mensual electronically on SAT's portal and pay by Day 17.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <strong>High pain steps</strong> · Owner: ~25 hrs/mo · Accountant: ~14 hrs/mo · Key bottleneck: data handoff &amp; manual re-keying
+  </div>
+
+  <div class="nav-row">
+    <div class="dots2">
+      <div class="dot2 active s0" onclick="goTo(0)" id="dot0"></div>
+      <div class="dot2" onclick="goTo(1)" id="dot1"></div>
+      <div class="dot2" onclick="goTo(2)" id="dot2"></div>
+      <div class="dot2" onclick="goTo(3)" id="dot3"></div>
+    </div>
+    <div class="nav-btns">
+      <button class="nav-btn2" onclick="go(-1)" aria-label="Previous">&#8592;</button>
+      <button class="nav-btn2" onclick="go(1)" aria-label="Next">&#8594;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const TOTAL = 4, INTERVAL = 9000;
+  const COLORS = ['s0','s1','s2','s3'];
+  let cur = 0, timer, ptimer, pstart;
+
+  function updateUI(next) {
+    const prev = cur;
+    cur = ((next % TOTAL) + TOTAL) % TOTAL;
+
+    document.getElementById('card'+prev).classList.remove('active');
+    document.getElementById('card'+cur).classList.add('active');
+
+    const dPrev = document.getElementById('d'+prev);
+    const dCur  = document.getElementById('d'+cur);
+    dPrev.classList.add('exit');
+    dPrev.classList.remove('active');
+    setTimeout(() => dPrev.classList.remove('exit'), 450);
+    dCur.classList.add('active');
+
+    document.getElementById('dot'+prev).classList.remove('active', ...COLORS);
+    document.getElementById('dot'+cur).classList.add('active', COLORS[cur]);
+  }
+
+  function go(d) { resetP(); updateUI(cur + d); startAuto(); }
+  function goTo(i) { if (i === cur) return; resetP(); updateUI(i); startAuto(); }
+
+  function resetP() { clearInterval(ptimer);  }
+  function startP() {
+    pstart = Date.now();
+    ptimer = setInterval(() => {
+      
+    }, 40);
+  }
+  function startAuto() {
+    clearInterval(timer); resetP(); startP();
+    timer = setInterval(() => { updateUI(cur+1); resetP(); startP(); }, INTERVAL);
+  }
+
+  startAuto();
+</script>
+</body>
+</html>
