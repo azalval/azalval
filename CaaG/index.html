@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Case Study: Compliance as a Growth Strategy · Ana Zaldivar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --text:     #0d0d0d;
+      --muted:    #6b7280;
+      --subtle:   #9ca3af;
+      --accent:   #6366f1;
+      --accent-2: #8b5cf6;
+      --border:   #f0f0f0;
+      --surface:  #fafafa;
+      --bg:       #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 3rem;
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: -0.03em;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .logo span {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .back-link {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0d0d0d 0%, #1a2744 100%);
+      color: #fff;
+      padding: 6rem clamp(1.25rem, 5vw, 3rem) 5rem;
+    }
+    .hero-inner { max-width: 975px; width: 100%; margin: 0 auto; }
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .tag-purple { background: rgba(99,102,241,0.3); color: #c7d2fe; }
+    .tag-green  { background: rgba(16,185,129,0.25); color: #6ee7b7; }
+    .tag-date   { color: rgba(255,255,255,0.45); font-size: 0.8rem; font-weight: 500; }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.65);
+      max-width: 775px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(160px, 220px));
+      gap: 2rem 4rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 2rem;
+    }
+    .hero-stat .num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-stat .lbl { font-size: 0.78rem; color: rgba(255,255,255,0.45); margin-top: 0.1rem; }
+
+    /* ── ARTICLE ── */
+    .article {
+      max-width: 975px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 4rem clamp(1.25rem, 5vw, 3rem) 6rem;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 4rem; }
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .section h2 {
+      font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+    }
+    .section p {
+      color: var(--muted);
+      font-size: 0.975rem;
+      margin-bottom: 1rem;
+      line-height: 1.8;
+    }
+    .section p:last-child { margin-bottom: 0; }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 3.5rem 0;
+    }
+
+    /* ── CALLOUT ── */
+    .callout {
+      background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+      border: 1px solid #e0e7ff;
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.5rem 1.75rem;
+      margin: 1.5rem 0;
+    }
+    .callout p {
+      color: #3730a3 !important;
+      font-weight: 600;
+      font-size: 1rem !important;
+      margin: 0 !important;
+      line-height: 1.6 !important;
+    }
+
+    /* ── DARK CALLOUT ── */
+    .callout-dark {
+      background: #0d0d0d;
+      color: #fff;
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 1.5rem 0;
+    }
+    .callout-dark .label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #818cf8; margin-bottom: 0.75rem;
+    }
+    .callout-dark p {
+      color: rgba(255,255,255,0.75) !important;
+      font-size: 0.975rem !important;
+      margin: 0 !important;
+      line-height: 1.7 !important;
+    }
+    .callout-dark strong { color: #c7d2fe; }
+
+    /* ── CUSTOMER CARD ── */
+    .customer-card {
+      background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+      border: 1px solid #bbf7d0;
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 1.5rem 0;
+    }
+    .customer-card h3 { font-size: 1rem; font-weight: 800; margin-bottom: 0.75rem; color: #065f46; }
+    .customer-card p { font-size: 0.875rem; color: #047857; line-height: 1.7; margin: 0; }
+
+    /* ── STAT GRID ── */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .stat-box .num {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-box .lbl { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; line-height: 1.4; }
+
+    /* ── ROADMAP ── */
+    .roadmap { margin: 1.5rem 0; display: flex; flex-direction: column; gap: 0; }
+    .roadmap-step {
+      display: flex;
+      gap: 1.25rem;
+      padding: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      position: relative;
+    }
+    .roadmap-step:first-child { border-radius: 14px 14px 0 0; }
+    .roadmap-step:last-child { border-bottom: 1px solid var(--border); border-radius: 0 0 14px 14px; }
+    .roadmap-step.active { background: linear-gradient(135deg, #eef2ff, #f5f3ff); border-color: #c7d2fe; }
+    .step-stage {
+      flex-shrink: 0;
+      width: 64px;
+      text-align: center;
+    }
+    .step-badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      margin-bottom: 0.3rem;
+    }
+    .step-year { font-size: 0.7rem; color: var(--muted); font-weight: 600; }
+    .step-content h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .step-content p { font-size: 0.83rem; color: var(--muted); line-height: 1.6; margin: 0; }
+    .step-vp {
+      display: inline-block;
+      margin-top: 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: rgba(99,102,241,0.08);
+      border-radius: 100px;
+      padding: 0.2rem 0.6rem;
+    }
+
+    /* ── TECH SECTION ── */
+    .tech-phase {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    @media (max-width: 680px) { .tech-phase { grid-template-columns: 1fr; } }
+    .tech-phase-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .tech-phase-card.highlight {
+      background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+      border-color: #c7d2fe;
+    }
+    .tech-phase-header {
+      padding: 1.1rem 1.4rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .tech-phase-card.highlight .tech-phase-header { border-color: #c7d2fe; }
+    .phase-pill {
+      font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 0.25rem 0.6rem;
+      border-radius: 100px; white-space: nowrap; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+    }
+    .tech-phase-header h4 { font-size: 0.9rem; font-weight: 700; }
+    .tech-phase-img {
+      width: 100%; display: block;
+      background: #fff;
+      padding: 1rem;
+    }
+    .tech-phase-body { padding: 1.1rem 1.4rem 1.4rem; }
+    .tech-phase-body p { font-size: 0.83rem; color: var(--muted); line-height: 1.7; margin: 0; }
+    .cfdi-doc {
+      font-size: 0.72rem;
+      line-height: 1.5;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 0.5rem 0 0;
+    }
+    .cfdi-doc-header {
+      background: #f3f4f6;
+      border-bottom: 1px solid #d1d5db;
+      padding: 0.5rem 0.75rem;
+      font-weight: 700;
+      text-align: center;
+      font-size: 0.73rem;
+      color: #374151;
+    }
+    .cfdi-doc-body { padding: 0.75rem; background: #fff; }
+    .cfdi-field { display: flex; gap: 0.5rem; margin-bottom: 0.3rem; }
+    .cfdi-field .f-label { color: #6b7280; min-width: 120px; flex-shrink: 0; }
+    .cfdi-field .f-val { color: #111827; font-weight: 600; font-family: monospace; font-size: 0.68rem; word-break: break-all; }
+    .cfdi-divider { border: none; border-top: 1px solid #e5e7eb; margin: 0.6rem 0; }
+    .cfdi-stamp-row { background: #f9fafb; border-radius: 4px; padding: 0.5rem 0.6rem; margin-top: 0.4rem; }
+    .cfdi-stamp-row .f-label { color: #374151; font-weight: 700; min-width: 140px; }
+    .cfdi-stamp-row .f-val { color: #374151; font-size: 0.62rem; }
+    .cfdi-badge {
+      display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px;
+      font-size: 0.65rem; font-weight: 700;
+      background: #dcfce7; color: #15803d; margin-bottom: 0.5rem;
+    }
+
+    /* ── DIAGRAM ── */
+    .diagram-wrap {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1rem;
+      overflow-x: auto;
+    }
+
+    /* ── INSIGHT TABLE ── */
+    .insight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin: 1.5rem 0;
+    }
+    .insight-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; }
+    .insight-row {
+      display: grid;
+      grid-template-columns: 1fr 80px 80px;
+      align-items: center;
+      padding: 0.65rem 0;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    .insight-row:first-of-type { border-top: none; }
+    .insight-row .label { color: var(--muted); }
+    .insight-row .val { font-weight: 700; text-align: right; }
+    .insight-row .val.good { color: #059669; }
+    .insight-row .val.warn { color: #d97706; }
+    .insight-row .val.bad  { color: #dc2626; }
+
+    /* ── COMPARISON GRID ── */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    @media (max-width: 580px) { .compare-grid { grid-template-columns: 1fr; } }
+    .compare-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+    .compare-card.highlight {
+      background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+      border-color: #c7d2fe;
+    }
+    .compare-card .c-label {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem;
+    }
+    .compare-card.highlight .c-label { color: var(--accent); }
+    .compare-card h4 { font-size: 0.9rem; font-weight: 800; margin-bottom: 0.75rem; }
+    .compare-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.45rem 0; border-top: 1px solid var(--border);
+      font-size: 0.82rem;
+    }
+    .compare-row:first-of-type { border-top: none; }
+    .compare-row .r-label { color: var(--muted); }
+    .compare-row .r-val { font-weight: 700; }
+
+    /* ── MARKET COMPARISON TABLE ── */
+    .market-table-wrap {
+      overflow-x: auto;
+      margin: 1.75rem 0;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    .market-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      min-width: 580px;
+    }
+    .market-table thead tr {
+      background: #0d0d0d;
+    }
+    .market-table thead th {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      font-weight: 700;
+      color: #fff;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+    }
+    .market-table thead th:first-child {
+      color: rgba(255,255,255,0.5);
+      font-weight: 500;
+    }
+    .market-table thead th .mkt-flag {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 0.2rem;
+    }
+    .market-table tbody tr {
+      border-top: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .market-table tbody tr:hover { background: #fafafa; }
+    .market-table tbody tr.shared {
+      background: linear-gradient(90deg, #f0fdf4 0%, #fff 100%);
+    }
+    .market-table tbody tr.shared:hover { background: #e8faf0; }
+    .market-table td {
+      padding: 0.75rem 1rem;
+      vertical-align: top;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .market-table td:first-child {
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+    .market-table td .check {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      color: #059669; font-weight: 600;
+    }
+    .market-table td .check::before { content: "✓"; font-weight: 800; }
+    .market-table td .neutral { color: var(--muted); }
+    .market-table td .warn { color: #d97706; font-weight: 600; }
+    .shared-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: #059669;
+      background: #dcfce7; border-radius: 100px;
+      padding: 0.2rem 0.55rem; margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+    .market-table thead th.mx-col { color: #818cf8; }
+
+    /* ── DEMO LINK ── */
+    .demo-box {
+      background: #0d0d0d;
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin: 2rem 0;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .demo-box-text h3 {
+      font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em;
+      color: #fff; margin-bottom: 0.4rem;
+    }
+    .demo-box-text p {
+      font-size: 0.875rem; color: rgba(255,255,255,0.5);
+      margin: 0; line-height: 1.6;
+    }
+    .demo-btn {
+      flex-shrink: 0;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.8rem 1.5rem;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff; border-radius: 10px;
+      text-decoration: none; font-size: 0.875rem; font-weight: 700;
+      transition: opacity 0.2s, transform 0.2s; white-space: nowrap;
+    }
+    .demo-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* ── CTA ── */
+    .cta-box {
+      background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+      border: 1px solid #e0e7ff;
+      border-radius: 20px;
+      padding: 3rem;
+      text-align: center;
+      margin-top: 4rem;
+    }
+    .cta-box h2 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.75rem; }
+    .cta-box p { color: var(--muted); margin-bottom: 1.75rem; font-size: 0.975rem; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.8rem 1.6rem; border-radius: 10px;
+      text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff; box-shadow: 0 4px 15px rgba(99,102,241,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99,102,241,0.4); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8rem;
+      color: var(--subtle);
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 1.25rem 1.5rem; }
+      .hero { padding: 4rem 1.5rem 3rem; }
+      .article { padding: 3rem 1.5rem 4rem; }
+      .hero-stats { gap: 1.5rem; }
+      .cta-box { padding: 2rem 1.5rem; }
+      .demo-box { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="../index.html"><span>az</span>alval</a>
+    <a class="back-link" href="../index.html#cases">← Back to Case Studies</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-meta">
+        <span class="tag tag-purple">Compliance · Tax · Product Strategy</span>
+        <span class="tag tag-green">QuickBooks Mexico · Intuit</span>
+        <span class="tag-date">Stages 1 – 5</span>
+      </div>
+      <h1>Compliance as a<br><em>Growth Strategy</em></h1>
+      <p class="hero-sub">How building tax compliance into the core of QuickBooks Mexico — from CFDI stamping to AI-powered fiscal automation — became the primary lever for product-market fit, retention, and growth in a complex regulatory market.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">21.7M</div><div class="lbl">SMB total addressable market in Mexico</div></div>
+        <div class="hero-stat"><div class="num">$12.8K <span style="font-size:0.55em;font-weight:600;opacity:0.7;">MXN</span></div><div class="lbl">Avg. annual cost per SMB paid to accountants</div></div>
+        <div class="hero-stat"><div class="num">70%</div><div class="lbl">12-month retention target at PMF</div></div>
+        <div class="hero-stat"><div class="num">16–20hrs</div><div class="lbl">Monthly compliance time lost per business</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="article">
+
+    <!-- CONTEXT -->
+    <div class="section">
+      <p class="section-label">Context & Problem</p>
+      <h2>In Mexico, compliance isn't optional — and it's brutal to manage manually.</h2>
+      <p>Every formal business in Mexico must navigate a rigorous fiscal system administered by the SAT (Servicio de Administración Tributaria): issue SAT-certified electronic invoices (CFDIs), calculate and file monthly ISR (income tax) and IVA (VAT), manage payroll compliance with stamped payslips across 30+ required fields, and submit electronic accounting reports. Mistakes mean fines. Delays mean audits.</p>
+      <p>Despite this, small business owners were managing all of it manually — across spreadsheets, third-party invoicing tools, and a slow, complex SAT portal — spending 16 to 20 hours every month just to stay compliant. Those who could afford it outsourced to an accountant, paying <strong>$12.8K USD per year</strong> for the privilege.</p>
+      <div class="callout">
+        <p>"I'm trying to have visibility of my business to make the right decisions. But it takes 16–20 hours a month to manually input and consolidate all data. Because all my financial data is spread out in different tools and spreadsheets — which makes me feel helpless and lost."</p>
+      </div>
+      <p>QuickBooks Mexico (QBO MX) launched with a core insight: <strong>compliance is the gateway</strong>. Solve the compliance problem first — and you earn the right to help SMBs with everything else.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- THE CUSTOMER -->
+    <div class="section">
+      <p class="section-label">The Customer</p>
+      <h2>An uncomfortably narrow "Unit of One" — to build a real competitive advantage.</h2>
+      <p>The strategy began with a deliberate focus on a specific, underserved segment: B2B professional and business services SMBs in Mexico. Highly educated, tech-savvy, highly compliant, and already paying for digital tools — but no one was solving their full compliance journey end-to-end.</p>
+
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num">110K</div><div class="lbl">Target "Unit of One" businesses</div></div>
+        <div class="stat-box"><div class="num">2.6M</div><div class="lbl">Serviceable obtainable market (SOM)</div></div>
+        <div class="stat-box"><div class="num">13M</div><div class="lbl">Serviceable addressable market (SAM)</div></div>
+        <div class="stat-box"><div class="num">0–10</div><div class="lbl">Employees (Persona Moral structure)</div></div>
+      </div>
+
+      <p>Industries in scope: digital agencies, legal services, architecture & design, fintechs, photo & video studios. Their clients always require a factura — making them naturally highly compliant and invoice-heavy. They use mostly digital payments, hire external accountants, and are project-based. In short: they desperately needed a better tool, and they had money to pay for it.</p>
+
+      <div class="customer-card">
+        <h3>The Monthly Compliance Journey — 4 Jobs Every Business Must Complete</h3>
+        <p><strong>1 · Compliant Sales</strong> — Issue SAT-certified CFDIs (e-invoices) at every transaction.<br/>
+        <strong>2 · Compliant Expenses</strong> — Collect and store compliant receipts and proof of payment.<br/>
+        <strong>3 · Compliant Payroll</strong> — Prepare payroll, issue stamped payslips (30 mandatory fields), pay labour taxes.<br/>
+        <strong>4 · Close the Month</strong> — Reconcile bank accounts, calculate ISR/IVA, file electronically with SAT, pay taxes.</p>
+      </div>
+
+      <p>At launch, most of these steps were either fully handled by an accountant or done manually by the business owner across disconnected tools. The core unsolved pain points were cash flow visibility and bank reconciliation — areas where no single tool had a clear winner.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- STRATEGY -->
+    <div class="section">
+      <p class="section-label">Strategy</p>
+      <h2>Compliance first. Everything else follows.</h2>
+      <p>The strategic bet was clear: <strong>compliance is the moat</strong>. Mexican SMBs don't choose accounting software because it looks good — they choose it because it helps them survive SAT. If QuickBooks could own the compliance layer, it would become indispensable. Switching costs go up. Retention goes up. The path to upsell opens.</p>
+      <div class="callout-dark">
+        <div class="label">Strategic Vision</div>
+        <p>"Deliver a compliant, time-saving product-market fit with SMBs — <strong>guaranteeing stable and reliable connections with bank and tax authorities</strong>, and automating monthly tax reconciliation."</p>
+      </div>
+      <p>The product roadmap was structured as a staged evolution — each phase adding a new value proposition that earned more of the customer's financial life, increasing retention and NPS at each step.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- INVOICING TECH -->
+    <div class="section">
+      <p class="section-label">Technical Foundation</p>
+      <h2>Before QBO could sell in Mexico, it had to learn to stamp.</h2>
+      <p>In Mexico, an invoice is not valid unless it is digitally certified and stamped by the SAT through an authorized third-party provider (PAC — Proveedor Autorizado de Certificación). The stamping process — called <em>timbre</em> — assigns a unique fiscal folio, attaches the SAT's digital seal, and generates the official CFDI (Comprobante Fiscal Digital por Internet) XML. Without this, no invoice is legally recognized. No payment can be claimed. No expense can be deducted.</p>
+      <p>QuickBooks Online had no native capability for this. Building a SAT-certified PAC from scratch would have taken years and required regulatory approval. The decision: partner with <strong>Reachcore</strong>, Mexico's leading authorized certification provider, via API integration — enabling QBO to issue fully compliant CFDIs on day one of launch.</p>
+
+      <div class="callout-dark">
+        <div class="label">The Technical Challenge</div>
+        <p>A Mexican CFDI requires <strong>37 mandatory fields</strong> — each validated against SAT's schema. The XML must be signed with the issuer's digital certificate (e.firma), transmitted to the PAC over HTTPS, stamped with the SAT's digital seal (Timbre Fiscal Digital), and returned as a certified document within seconds. Any field error or connectivity failure means no invoice — and a blocked sale.</p>
+      </div>
+
+      <div class="tech-phase">
+
+        <!-- PHASE 1 -->
+        <div class="tech-phase-card">
+          <div class="tech-phase-header">
+            <span class="phase-pill">Phase 1</span>
+            <h4>3rd party stamping</h4>
+          </div>
+          <div class="tech-phase-body">
+            <p>QBO generates and signs the XML invoice (applying the issuer's <em>sello digital</em>), transmits it to Reachcore over HTTPS, which validates, stamps the fiscal folio (timbre), and returns a fully certified CFDI — all within the same transaction. The certified CFDI is stored in QBO and delivered to the customer as PDF. This was the minimum viable product for the Mexican market.</p>
+          </div>
+        </div>
+
+        <!-- PHASE 2 -->
+        <div class="tech-phase-card highlight">
+          <div class="tech-phase-header">
+            <span class="phase-pill">Phase 2</span>
+            <h4>Full invoice customization</h4>
+          </div>
+          <div class="tech-phase-body">
+            <p>Phase 1 produced SAT-valid invoices but they looked generic — QBO's template, QBO's branding. <strong>~3% of all cancellations</strong> in the early stage cited lack of invoice customization. In Phase 2, QBO took ownership of PDF generation: customers could add their logo, choose colors, customize layout, and include their own business details — while the underlying CFDI XML remained fully SAT-compliant. Looking professional became a competitive differentiator, not a concession.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ANIMATION WIDGET -->
+      <div style="margin-top:2rem; border-radius:16px; overflow:hidden; border:1px solid var(--border);">
+        <iframe
+          src="animation.html"
+          style="width:100%; height:660px; border:none; display:block;"
+          scrolling="no"
+          title="QBO Global Invoicing Animation"
+        ></iframe>
+      </div>
+
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ROADMAP -->
+    <div class="section">
+      <p class="section-label">Product Evolution</p>
+      <h2>Five stages from basic invoicing to AI-powered fiscal intelligence.</h2>
+
+      <div class="roadmap">
+        <div class="roadmap-step">
+          <div class="step-stage">
+            <div class="step-badge">Stage 1</div>
+          </div>
+          <div class="step-content">
+            <h4>Compliant Invoicing Foundation</h4>
+            <p>Compliant FTU (first-time use), CFDI invoice stamping via Reachcore integration, basic tax center, and CFDI management. Mapped all 37 legally required fields for a Mexican invoice into QBO's internal platform. 40% of subscribers were stamping invoices every month within the first year.</p>
+            <span class="step-vp">Value prop: Save time and money issuing compliant invoices</span>
+          </div>
+        </div>
+        <div class="roadmap-step">
+          <div class="step-stage">
+            <div class="step-badge">Stage 2</div>
+          </div>
+          <div class="step-content">
+            <h4>Customization & Data-In</h4>
+            <p>Invoice customization (QBO generates its own PDF, enabling brand personalization), manual tax and bank data-in, and improved reconciliation experience. Approximately 3% of all cancellations prior to this were driven by the lack of invoice customization — this change stopped the bleed.</p>
+            <span class="step-vp">Value prop: Look professional with personalized invoices</span>
+          </div>
+        </div>
+        <div class="roadmap-step active">
+          <div class="step-stage">
+            <div class="step-badge">Stage 3</div>
+          </div>
+          <div class="step-content">
+            <h4>Auto Data-In & Direct SAT Connection</h4>
+            <p>Automated tax data import directly from SAT, automated bank data-in, web app store, and multi-currency support. This eliminated the single biggest time sink for SMBs — manually gathering and reconciling fiscal data every month. 12-month retention jumped from 30% to 39% following this stage.</p>
+            <span class="step-vp">Value prop: Full visibility of financial data in one place</span>
+          </div>
+        </div>
+        <div class="roadmap-step">
+          <div class="step-stage">
+            <div class="step-badge">Stage 4</div>
+          </div>
+          <div class="step-content">
+            <h4>Payroll, Fiscal Reconciliation & Electronic Filing</h4>
+            <p>Third-party payroll integration (64% of SMBs outsource this; 70% want to do it in QBO), fiscal reconciliation, tax calculation, and direct electronic filing with SAT. All 24M registered employees in Mexico must have SAT-compliant payslips — a massive unserved opportunity.</p>
+            <span class="step-vp">Value prop: Manage all compliance tasks with confidence</span>
+          </div>
+        </div>
+        <div class="roadmap-step">
+          <div class="step-stage">
+            <div class="step-badge">Stage 5</div>
+          </div>
+          <div class="step-content">
+            <h4>AI-Powered Fiscal Intelligence (FiscalIA)</h4>
+            <p>An AI-powered fiscal dashboard that auto-imports SAT data, pre-fills monthly declarations (ISR + IVA), flags anomalies (pending CFDI cancelations, incorrect usage codes), calculates optimal tax liability, and submits directly to SAT via e-firma. Turns a 20-hour monthly ordeal into a 10-minute review.</p>
+            <span class="step-vp">Value prop: Optimize cash flow and grow your business</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- INSIGHTS -->
+    <div class="section">
+      <p class="section-label">Key Insights</p>
+      <h2>The data proved the thesis: compliance adoption drives retention.</h2>
+      <p>The most important finding from the product data: customers who adopted more than one compliance job in QuickBooks showed dramatically higher retention and NPS — and customers who only invoiced, without adopting additional jobs, had the highest churn probability.</p>
+
+      <div class="insight-card">
+        <h3>Retention & PRS by Customer Tenure</h3>
+        <div class="insight-row" style="font-weight:600; color:var(--muted); font-size:0.78rem; letter-spacing:0.03em;">
+          <span>Segment</span>
+          <span style="text-align:right;">PRS</span>
+          <span style="text-align:right;">Active Use</span>
+        </div>
+        <div class="insight-row">
+          <span class="label">>12 months tenure</span>
+          <span class="val good">54</span>
+          <span class="val good">81%</span>
+        </div>
+        <div class="insight-row">
+          <span class="label">4–12 months tenure</span>
+          <span class="val">37</span>
+          <span class="val">76%</span>
+        </div>
+        <div class="insight-row">
+          <span class="label">&lt;90 days tenure</span>
+          <span class="val warn">29</span>
+          <span class="val">78%</span>
+        </div>
+        <div class="insight-row">
+          <span class="label">Churned subscribers</span>
+          <span class="val bad">N/A</span>
+          <span class="val bad">9%</span>
+        </div>
+      </div>
+
+      <p>The clearest signal: <strong>56% of the active base</strong> was invoicing every month and had adopted 3 core compliance jobs (expenses, reporting, managing employees) — and this group had a PRS above 40. Meanwhile, <strong>27% who only invoiced</strong> with no additional job adoption had the highest probability of churn. The prescription was obvious: accelerate adoption of the full compliance journey.</p>
+
+      <div class="callout">
+        <p>12-month retention for customers who adopted multiple compliance jobs was 2× higher than for invoice-only users. Every additional compliance job adopted was a signal of PMF — not just engagement.</p>
+      </div>
+    </div>
+
+
+    <hr class="divider" />
+
+    <!-- MARKET COMPARISON -->
+    <div class="section">
+      <p class="section-label">Global Context</p>
+      <h2>Mexico isn't alone — e-invoicing mandates are a global pattern.</h2>
+      <p>Every major emerging and developed market is converging on the same model: government-mandated electronic invoicing, real-time validation by an authorized third party, embedded tax calculation, and long-term archiving. The implementation details differ — but the structural requirements are strikingly similar. This makes the compliance infrastructure built for Mexico directly transferable to other markets.</p>
+
+      <div class="market-table-wrap">
+        <table class="market-table">
+          <thead>
+            <tr>
+              <th>Requirement</th>
+              <th class="mx-col"><span class="mkt-flag">🇲🇽</span>Mexico</th>
+              <th><span class="mkt-flag">🇧🇷</span>Brazil</th>
+              <th><span class="mkt-flag">🇫🇷</span>France</th>
+              <th><span class="mkt-flag">🇮🇳</span>India</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="shared">
+              <td>Mandatory e-invoicing <span class="shared-badge">Universal</span></td>
+              <td><span class="check">Required (SAT)</span></td>
+              <td><span class="check">Required (SEFAZ)</span></td>
+              <td><span class="check">Required (B2B 2026+)</span></td>
+              <td><span class="check">Required (IRP/GSTN)</span></td>
+            </tr>
+            <tr class="shared">
+              <td>Gov-authorized 3rd-party validator <span class="shared-badge">Universal</span></td>
+              <td><span class="check">PAC (e.g. Reachcore)</span></td>
+              <td><span class="check">SEFAZ-certified provider</span></td>
+              <td><span class="check">PDP / Chorus Pro</span></td>
+              <td><span class="check">IRP (NIC/GST Network)</span></td>
+            </tr>
+            <tr class="shared">
+              <td>Digital signature required <span class="shared-badge">Universal</span></td>
+              <td><span class="check">e.firma (SAT cert)</span></td>
+              <td><span class="check">A1/A3 certificate</span></td>
+              <td><span class="check">Qualified e-signature</span></td>
+              <td><span class="check">DSC / EVC</span></td>
+            </tr>
+            <tr class="shared">
+              <td>Structured digital format <span class="shared-badge">Universal</span></td>
+              <td><span class="check">XML CFDI 4.0</span></td>
+              <td><span class="check">XML NF-e / NFS-e</span></td>
+              <td><span class="check">Factur-X / UBL / CII</span></td>
+              <td><span class="check">JSON (IRP schema)</span></td>
+            </tr>
+            <tr class="shared">
+              <td>Tax embedded in invoice <span class="shared-badge">Universal</span></td>
+              <td><span class="check">ISR + IVA</span></td>
+              <td><span class="check">ICMS, ISS, PIS, COFINS</span></td>
+              <td><span class="check">TVA (VAT)</span></td>
+              <td><span class="check">CGST + SGST / IGST</span></td>
+            </tr>
+            <tr class="shared">
+              <td>Mandatory archiving <span class="shared-badge">Universal</span></td>
+              <td><span class="check">5 years</span></td>
+              <td><span class="check">5 years</span></td>
+              <td><span class="check">10 years</span></td>
+              <td><span class="check">6 years</span></td>
+            </tr>
+            <tr>
+              <td>Real-time SAT/gov validation</td>
+              <td><span class="check">Yes (milliseconds)</span></td>
+              <td><span class="check">Yes (SEFAZ sync)</span></td>
+              <td><span class="neutral">Batch + real-time (2026)</span></td>
+              <td><span class="check">Yes (IRP, 24hr cancel)</span></td>
+            </tr>
+            <tr>
+              <td>Cancellation requires gov approval</td>
+              <td><span class="check">Yes (SAT)</span></td>
+              <td><span class="check">Yes (SEFAZ)</span></td>
+              <td><span class="neutral">Credit note process</span></td>
+              <td><span class="warn">Within 24hrs on IRP only</span></td>
+            </tr>
+            <tr>
+              <td>B2C e-invoicing mandate</td>
+              <td><span class="check">Yes</span></td>
+              <td><span class="check">Yes (NFC-e)</span></td>
+              <td><span class="neutral">Not yet mandated</span></td>
+              <td><span class="neutral">Threshold-based</span></td>
+            </tr>
+            <tr>
+              <td>Penalty for non-compliance</td>
+              <td><span class="check">Fines + audit</span></td>
+              <td><span class="check">Fines + suspension</span></td>
+              <td><span class="check">Fines (€15/invoice)</span></td>
+              <td><span class="check">Fines + ITC denial</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Six of the ten dimensions are identical across all four markets — mandatory e-invoicing, an authorized third-party validator, digital signatures, structured formats, embedded tax, and archiving requirements. The infrastructure pattern QBO built for Mexico — a PAC integration layer, a compliant XML generator, and a certified archiving system — is directly replicable in Brazil, France, and India with market-specific adapters. Compliance isn't a local problem. It's a global product opportunity.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- FISCALIA -->
+    <div class="section">
+      <p class="section-label">The Vision in Practice</p>
+      <h2>FiscalIA — what the end state looks like.</h2>
+      <p>FiscalIA is a prototype of the Stage 5 vision: an AI-powered fiscal dashboard for PFAE (Persona Física con Actividad Empresarial) business owners. It auto-imports income and expense data from SAT, pre-fills monthly ISR and IVA declarations, flags anomalies before they become compliance risks, and can submit declarations and manage payment — all in a single session.</p>
+      <p>It's the answer to the original customer problem: a system that does it all for you, so you can make decisions with confidence — instead of spending 20 hours a month just staying compliant.</p>
+
+      <div class="demo-box">
+        <div class="demo-box-text">
+          <h3>Live prototype: FiscalIA PFAE Dashboard</h3>
+          <p>See the full AI-powered fiscal dashboard — income tracking, CFDI management, ISR/IVA calculation, and SAT filing in one place.</p>
+        </div>
+        <a class="demo-btn" href="https://azalval.github.io/tax_solution_mx/" target="_blank" rel="noopener">View live demo →</a>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-box">
+      <h2>Building in a regulated market?</h2>
+      <p>Compliance-first product strategy is one of the most powerful — and underestimated — paths to PMF. Let's talk about how to turn a regulatory burden into a competitive moat for your business.</p>
+      <a class="btn btn-primary" href="../index.html#contact">Get in touch →</a>
+    </div>
+
+  </div>
+
+  <footer>&copy; 2026 Ana Zaldivar · azalval.com</footer>
+
+</body>
+</html>
