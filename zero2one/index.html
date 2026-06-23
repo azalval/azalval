@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Case Study: Kompas — Building a Financial Health App for SMBs · Ana Zaldivar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── GATE ── */
+    #gate {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(135deg, #0d0d0d 0%, #0f172a 60%, #1a2e1a 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+      transition: opacity 0.5s ease;
+    }
+    #gate.unlocking { opacity: 0; pointer-events: none; }
+    .gate-box {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+    .gate-logo {
+      font-weight: 800; font-size: 1rem; letter-spacing: -0.03em;
+      text-decoration: none; color: #fff; display: inline-block; margin-bottom: 2rem;
+    }
+    .gate-logo span {
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .gate-box h2 {
+      font-size: 1.4rem; font-weight: 800; letter-spacing: -0.03em;
+      color: #fff; margin-bottom: 0.5rem;
+    }
+    .gate-box p {
+      font-size: 0.875rem; color: rgba(255,255,255,0.5);
+      margin-bottom: 2rem; line-height: 1.6;
+    }
+    .gate-input-wrap { position: relative; margin-bottom: 1rem; }
+    #codeInput {
+      width: 100%;
+      padding: 0.85rem 1.25rem;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+      font-family: inherit; font-size: 0.95rem; letter-spacing: 0.05em;
+      outline: none; text-align: center;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #codeInput::placeholder { color: rgba(255,255,255,0.3); letter-spacing: 0; }
+    #codeInput:focus {
+      border-color: #4ade80;
+      box-shadow: 0 0 0 3px rgba(74,222,128,0.15);
+    }
+    #codeInput.error { border-color: #f87171; box-shadow: 0 0 0 3px rgba(248,113,113,0.2); }
+    #gateBtn {
+      width: 100%; padding: 0.85rem;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: #fff; border: none; border-radius: 10px;
+      font-family: inherit; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s, transform 0.2s;
+    }
+    #gateBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+    #gateBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    #gateError {
+      display: none; color: #fca5a5;
+      font-size: 0.8rem; margin-top: 0.75rem; font-weight: 500;
+    }
+    .gate-panel { display: none; }
+    .gate-panel.visible { display: block; }
+    .gate-request-link {
+      display: inline-block; margin-top: 1.25rem;
+      font-size: 0.8rem; color: rgba(255,255,255,0.4);
+      cursor: pointer; transition: color 0.2s;
+    }
+    .gate-request-link:hover { color: rgba(255,255,255,0.7); }
+    .gate-back {
+      display: inline-block; margin-bottom: 1.5rem;
+      font-size: 0.8rem; color: rgba(255,255,255,0.4);
+      cursor: pointer; transition: color 0.2s;
+    }
+    .gate-back:hover { color: rgba(255,255,255,0.7); }
+    .gate-field {
+      width: 100%; padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.07);
+      color: #fff; font-family: inherit; font-size: 0.875rem;
+      outline: none; margin-bottom: 0.75rem; box-sizing: border-box;
+      resize: vertical;
+    }
+    .gate-field::placeholder { color: rgba(255,255,255,0.3); }
+    .gate-field:focus { border-color: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,0.15); }
+    #reqBtn {
+      width: 100%; padding: 0.85rem;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: #fff; border: none; border-radius: 10px;
+      font-family: inherit; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s, transform 0.2s;
+    }
+    #reqBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+    #reqBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    #reqSuccess { display: none; color: #86efac; font-size: 0.8rem; margin-top: 0.75rem; font-weight: 500; }
+    #reqError   { display: none; color: #fca5a5; font-size: 0.8rem; margin-top: 0.75rem; font-weight: 500; }
+
+    :root {
+      --text:     #0d0d0d;
+      --muted:    #6b7280;
+      --subtle:   #9ca3af;
+      --accent:   #16a34a;
+      --accent-2: #15803d;
+      --border:   #f0f0f0;
+      --surface:  #fafafa;
+      --bg:       #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      padding: 0;
+      position: sticky;
+      top: 0;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 100;
+    }
+    .nav-inner {
+      max-width: 936px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem clamp(1.25rem, 5vw, 3rem);
+    }
+    .logo {
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: -0.03em;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .logo span {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .back-link {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0d0d0d 0%, #0f2d0f 60%, #1a3d1a 100%);
+      color: #fff;
+      padding: 6rem 0 5rem;
+    }
+    .hero-inner {
+      max-width: 936px;
+      margin: 0 auto;
+      padding: 0 clamp(1.25rem, 5vw, 3rem);
+    }
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .tag-green  { background: rgba(22,163,74,0.3); color: #86efac; }
+    .tag-teal   { background: rgba(20,184,166,0.25); color: #99f6e4; }
+    .tag-date   { color: rgba(255,255,255,0.45); font-size: 0.8rem; font-weight: 500; }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, #4ade80, #86efac);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.65);
+      max-width: 620px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 2rem;
+    }
+    .hero-stat .num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #4ade80, #86efac);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-stat .lbl {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.45);
+      margin-top: 0.1rem;
+    }
+
+    /* ── ARTICLE LAYOUT ── */
+    .article {
+      max-width: 936px;
+      margin: 0 auto;
+      padding: 4rem clamp(1.25rem, 5vw, 3rem) 6rem;
+    }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 4rem; }
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .section h2 {
+      font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+    }
+    .section p {
+      color: var(--muted);
+      font-size: 0.975rem;
+      margin-bottom: 1rem;
+      line-height: 1.8;
+    }
+    .section p:last-child { margin-bottom: 0; }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 3.5rem 0;
+    }
+
+    /* ── CALLOUT ── */
+    .callout {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border: 1px solid #bbf7d0;
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.5rem 1.75rem;
+      margin: 1.5rem 0;
+    }
+    .callout p {
+      color: #14532d !important;
+      font-weight: 600;
+      font-size: 1rem !important;
+      margin: 0 !important;
+      line-height: 1.6 !important;
+    }
+
+    /* ── OPPORTUNITY CARDS ── */
+    .opp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    @media (max-width: 700px) { .opp-grid { grid-template-columns: 1fr; } }
+    .opp-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+    }
+    .opp-card.highlight {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border-color: #bbf7d0;
+    }
+    .opp-icon { font-size: 1.6rem; margin-bottom: 0.75rem; }
+    .opp-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+    .opp-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    /* ── TIMELINE ── */
+    .timeline { margin: 1.5rem 0; }
+    .tl-item {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1.25rem 0;
+      border-top: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .tl-item:first-child { border-top: none; }
+    .tl-date {
+      flex-shrink: 0;
+      width: 72px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      padding-top: 0.15rem;
+      text-transform: uppercase;
+    }
+    .tl-dot {
+      width: 10px; height: 10px; flex-shrink: 0;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-top: 0.4rem;
+    }
+    .tl-content h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .tl-content p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    /* ── TEAM PILLS ── */
+    .team-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 1.25rem 0;
+    }
+    .team-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    /* ── IMPACT CARDS ── */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .impact-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem;
+    }
+    .impact-card.positive {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border-color: #bbf7d0;
+    }
+    .impact-card.challenge {
+      background: linear-gradient(135deg, #fef9ee, #fef3c7);
+      border-color: #fde68a;
+    }
+    .impact-card .ic-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .impact-card.positive .ic-label { color: #16a34a; }
+    .impact-card.challenge .ic-label { color: #d97706; }
+    .impact-card .ic-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .impact-card.positive .ic-num {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .impact-card.challenge .ic-num {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .impact-card p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* ── LESSONS LEARNED ── */
+    .lessons { margin: 1.5rem 0; }
+    .lesson {
+      display: flex;
+      gap: 1rem;
+      padding: 1.1rem 0;
+      border-top: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .lesson:first-child { border-top: none; }
+    .lesson-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.05rem; }
+    .lesson p { font-size: 0.9rem; color: var(--muted); margin: 0; line-height: 1.65; }
+    .lesson p strong { color: var(--text); }
+
+    /* ── DARK BOX ── */
+    .dark-box {
+      background: #0d0d0d;
+      color: #fff;
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 1.5rem 0;
+    }
+    .dark-box .db-label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #4ade80; margin-bottom: 0.75rem;
+    }
+    .dark-box p {
+      color: rgba(255,255,255,0.75) !important;
+      font-size: 0.95rem !important;
+      margin: 0 !important;
+      line-height: 1.7 !important;
+    }
+    .dark-box strong { color: #86efac; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8rem;
+      color: var(--subtle);
+    }
+
+    @media (max-width: 600px) {
+      .nav-inner { padding: 1.25rem 1.5rem; }
+      .hero { padding: 4rem 0 3rem; }
+      .article { padding: 3rem 1.5rem 4rem; }
+      .hero-stats { gap: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ACCESS GATE -->
+  <div id="gate">
+    <div class="gate-box">
+      <a class="gate-logo" href="../index.html"><span>az</span>alval</a>
+
+      <!-- UNLOCK PANEL -->
+      <div id="unlockPanel" class="gate-panel visible">
+        <h2>Access Required</h2>
+        <p>This case study is private. Enter your access code to continue.</p>
+        <div class="gate-input-wrap">
+          <input id="codeInput" type="password" placeholder="Enter access code"
+                 autocomplete="off" spellcheck="false"
+                 onkeydown="if(event.key==='Enter') checkCode()" />
+        </div>
+        <button id="gateBtn" onclick="checkCode()">Unlock →</button>
+        <p id="gateError">Incorrect code. Please try again.</p>
+        <span class="gate-request-link" onclick="showRequestPanel()">Don't have a code? Request access →</span>
+      </div>
+
+      <!-- REQUEST PANEL -->
+      <div id="requestPanel" class="gate-panel">
+        <span class="gate-back" onclick="showUnlockPanel()">← Back</span>
+        <h2>Request Access</h2>
+        <p>Fill in your details and I'll get back to you shortly.</p>
+        <input class="gate-field" id="reqName" type="text" placeholder="Your name" />
+        <input class="gate-field" id="reqEmail" type="email" placeholder="Your email" />
+        <textarea class="gate-field" id="reqReason" rows="3" placeholder="Why are you interested in this case study?"></textarea>
+        <button id="reqBtn" onclick="submitRequest()">Send request →</button>
+        <p id="reqSuccess">Request sent! I'll review it and reach out with an access code.</p>
+        <p id="reqError">Something went wrong. Please try again.</p>
+      </div>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-inner">
+      <a class="logo" href="../index.html"><span>az</span>alval</a>
+      <a class="back-link" href="../index.html#cases">← Back to Case Studies</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-meta">
+        <span class="tag tag-green">0 to 1 · Fintech</span>
+        <span class="tag tag-teal">Konfio · Mexico</span>
+        <span class="tag-date">2019 – 2020</span>
+      </div>
+      <h1>Building Kompas —<br>a Financial Health App<br><em>from the ground up</em></h1>
+      <p class="hero-sub">How a new free app for SMBs became a strategic front door for lending — turning Konfio's biggest acquisition problem into a data-driven qualification engine.</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="num">4×</div>
+          <div class="lbl">Growth in first 3 months after launch</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">15%</div>
+          <div class="lbl">Of new traffic qualified for lending after 6 months</div>
+        </div>
+        <div class="hero-stat">
+          <div class="num">~10M</div>
+          <div class="lbl">SMBs & Sole Props in the TAM (Mexico)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <article class="article">
+
+    <!-- CONTEXT & PROBLEM -->
+    <div class="section">
+      <p class="section-label">Context & Problem</p>
+      <h2>Mexico's largest digital lender was hitting a growth ceiling</h2>
+      <p>Konfio is Mexico's largest online lending platform serving Small Businesses and Sole Proprietors — a total addressable market of roughly 10 million. Its credit assessment process was 100% digital, using financial and tax data combined with credit bureau reports to deliver loan decisions in seconds.</p>
+      <p>Despite the technical sophistication, Konfio was running into three compounding barriers that threatened growth:</p>
+
+      <div class="opp-grid" style="margin-top: 1.75rem;">
+        <div class="opp-card">
+          <div class="opp-icon">💸</div>
+          <h3>High customer acquisition cost</h3>
+          <p>Competing head-to-head with traditional banks for the same search terms and loan-intent audiences was expensive and unsustainable at scale.</p>
+        </div>
+        <div class="opp-card">
+          <div class="opp-icon">📉</div>
+          <h3>Low approval rates</h3>
+          <p>Credit evaluations happened only at the moment of application. The inbound audience was broad and poorly qualified, dragging overall approval rates down.</p>
+        </div>
+        <div class="opp-card">
+          <div class="opp-icon">🔄</div>
+          <h3>No path back for declined customers</h3>
+          <p>More than 90% of declined applicants never applied again. Without knowing why they were rejected, they had no reason — or way — to return.</p>
+        </div>
+      </div>
+
+      <div class="dark-box" style="margin-top: 1.75rem;">
+        <div class="db-label">Problem statement</div>
+        <p>"I am a Mexican SMB with limited credit history and time in the market. I'm trying to grow my business — but I can't get capital because I'm constantly declined by banks. I don't know why, and I don't know what to do about it."</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- STRATEGIC OPPORTUNITY -->
+    <div class="section">
+      <p class="section-label">Strategic Opportunity</p>
+      <h2>Three problems. One new front door.</h2>
+      <p>Konfio had a single point of entry: the loan application. Fixing CAC, approval rates, and customer retention all required the same fundamental shift — creating a new channel that engaged SMBs <em>before</em> they were ready to borrow, and guided them toward becoming qualified candidates.</p>
+
+      <div class="callout">
+        <p>The core insight: if we could track a business's financial health over time, we could pre-qualify customers continuously — and only invite the right ones to apply for a loan.</p>
+      </div>
+
+      <p>Three specific opportunities shaped the product direction:</p>
+
+      <div class="lessons" style="margin-top: 1.5rem;">
+        <div class="lesson">
+          <div class="lesson-icon">🚪</div>
+          <p><strong>New front door:</strong> Rather than competing for loan-intent traffic, build an organic acquisition channel that attracts SMBs earlier in their financial journey — before they're ready to borrow.</p>
+        </div>
+        <div class="lesson">
+          <div class="lesson-icon">🎯</div>
+          <p><strong>Pre-evaluate before application:</strong> Use data accumulation over time to assess creditworthiness continuously, so only high-quality prospects are shown the loan offer — improving approval rates at the point of application.</p>
+        </div>
+        <div class="lesson">
+          <div class="lesson-icon">🗺️</div>
+          <p><strong>Guide declined customers back:</strong> Give previously-declined customers a roadmap. Show them exactly what to improve — and track their progress — so they return when they're ready, instead of disappearing forever.</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- SOLUTION -->
+    <div class="section">
+      <p class="section-label">Solution</p>
+      <h2>Kompas — a free financial health app for Mexican SMBs</h2>
+      <p>Kompas was a free mobile and web app that automatically tracked all invoices and expenses from the past 12 months, delivered a monthly credit bureau report, and provided a detailed financial analysis of the business.</p>
+      <p>High-quality prospects — those whose financial trajectory met Konfio's lending criteria — were surfaced a targeted invitation to apply for a loan. For everyone else, Kompas became the tool that helped them get there.</p>
+      <p>A premium tier offered additional features, testing willingness to pay and opening a direct revenue stream independent of lending conversion.</p>
+
+      <div class="opp-grid" style="margin-top: 1.75rem;">
+        <div class="opp-card highlight">
+          <div class="opp-icon">📊</div>
+          <h3>Financial health tracking</h3>
+          <p>Auto-import of all invoices and expenses from the past 12 months. Updated monthly with fresh data.</p>
+        </div>
+        <div class="opp-card highlight">
+          <div class="opp-icon">📋</div>
+          <h3>Credit bureau reports</h3>
+          <p>Monthly credit report delivered inside the app — giving SMBs visibility into the same data lenders were seeing.</p>
+        </div>
+        <div class="opp-card highlight">
+          <div class="opp-icon">🏦</div>
+          <h3>Loan-ready invitations</h3>
+          <p>Qualified users received a targeted prompt to apply for a Konfio loan — at the moment they were most likely to succeed.</p>
+        </div>
+      </div>
+
+      <iframe
+        src="kompas-animation.html"
+        style="width: 100%; height: 600px; border: none; border-radius: 16px; margin-top: 2rem; background: transparent;"
+        scrolling="no"
+        title="Kompas app walkthrough"
+      ></iframe>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- IMPLEMENTATION -->
+    <div class="section">
+      <p class="section-label">Implementation</p>
+      <h2>Zero to launch in 7 months</h2>
+      <p>The product was built by a dedicated cross-functional team assembled specifically for this initiative. We leveraged Konfio's existing backend infrastructure for loan processing — including financial and credit data pipelines — to accelerate the first proof of concept.</p>
+
+      <div style="margin: 1.5rem 0;">
+        <p class="section-label" style="margin-bottom: 0.75rem;">The team</p>
+        <div class="team-pills">
+          <span class="team-pill">6 Engineers</span>
+          <span class="team-pill">1 Product Manager</span>
+          <span class="team-pill">2 Designers</span>
+          <span class="team-pill">1 QA Engineer</span>
+          <span class="team-pill">1 Analyst</span>
+        </div>
+      </div>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-date">Jun '19</div>
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <h4>Team formation</h4>
+            <p>Identified the need for a dedicated "tribe" to build and own the product end-to-end. Assembled the cross-functional team and defined the product scope.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Aug '19</div>
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <h4>First proof of concept — Web</h4>
+            <p>Leveraged the existing lending backend to pull financial and credit data. Delivered the first POC to test core assumptions with real users.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Sep '19</div>
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <h4>MVP launched — React web app</h4>
+            <p>First fully functional version shipped as a React web app. Began running experiments on additional features and user flows.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Oct '19</div>
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <h4>Native mobile — Android</h4>
+            <p>Analytics revealed that over 60% of traffic was mobile. Prioritized Android first — with 80%+ of Mexico's smartphone market share — and built a native app.</p>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">Jan '20</div>
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <h4>Go-to-market launch</h4>
+            <p>7 months after kick-off, Kompas launched publicly with GTM campaigns. Early growth exceeded expectations by 4× within the first 3 months.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- IMPACT -->
+    <div class="section">
+      <p class="section-label">Impact</p>
+      <h2>Strong early signals — and honest lessons</h2>
+      <p>Kompas achieved significant early traction. Growth in the first quarter exceeded targets by a factor of four, and the product demonstrated clear demand for a financial health tool among Mexican SMBs.</p>
+
+      <iframe
+        src="kompas-downloads-chart.html"
+        style="width: 100%; height: 600px; border: none; border-radius: 16px; margin-bottom: 0.75rem;"
+        scrolling="no"
+        title="Kompas downloads chart"
+      ></iframe>
+
+      <div class="impact-grid">
+        <div class="impact-card positive">
+          <div class="ic-label">Early growth & ratings</div>
+          <div class="ic-num" style="font-size: 1.4rem;">4× growth · 4★+</div>
+          <p style="margin-top: 0.75rem;">4× growth in Google Play Store downloads in the first 3 months (vs. 50% MoM target), with app store ratings above 4 stars from day one.</p>
+        </div>
+        <div class="impact-card positive">
+          <div class="ic-label">Lending pipeline</div>
+          <div class="ic-num">15%</div>
+          <p>Of new Kompas users were qualified for a Konfio loan after 6 months, validating the pre-evaluation hypothesis.</p>
+        </div>
+        <div class="impact-card positive">
+          <div class="ic-label">Monetization signal</div>
+          <div class="ic-num">WTP ✓</div>
+          <p>Early paid subscriptions demonstrated real willingness to pay for the premium tier — a standalone revenue opportunity.</p>
+        </div>
+      </div>
+
+      <p style="margin-top: 1.75rem;">At the same time, the first six months surfaced important strategic gaps that shaped how we thought about the product's trajectory:</p>
+
+      <div class="impact-grid">
+        <div class="impact-card challenge">
+          <div class="ic-label">CAC challenge</div>
+          <div class="ic-num">↔</div>
+          <p>Lending CAC didn't improve in the first 6 months. Kompas leads were still too small relative to the total acquisition base to move the aggregate metric.</p>
+        </div>
+        <div class="impact-card challenge">
+          <div class="ic-label">Churn behavior</div>
+          <div class="ic-num">↔</div>
+          <p>Declined customers didn't improve their creditworthiness at the expected pace, and re-applied to loans sooner than planned — not yet ready to succeed.</p>
+        </div>
+        <div class="impact-card challenge">
+          <div class="ic-label">Conversion</div>
+          <div class="ic-num">↔</div>
+          <p>Trial-to-paid conversion was lower than expected. And the audience skewed toward consumers rather than the SMB segment we were targeting.</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- KEY LEARNINGS -->
+    <div class="section">
+      <p class="section-label">Key Learnings</p>
+      <h2>What this 0-to-1 build taught me</h2>
+
+      <div class="lessons">
+        <div class="lesson">
+          <div class="lesson-icon">⏱️</div>
+          <p><strong>Organic growth takes longer to compound than a single metric cycle can reveal.</strong> Four months of data was enough to see early traction, but not enough to draw conclusions about the lending CAC hypothesis — which required a sustained qualified base.</p>
+        </div>
+        <div class="lesson">
+          <div class="lesson-icon">🎯</div>
+          <p><strong>Product-channel fit matters as much as product-market fit.</strong> The app attracted users who found value in financial tracking — but not always the credit-seeking SMBs we were trying to reach. The acquisition channel and the product need to align on audience from the start.</p>
+        </div>
+        <div class="lesson">
+          <div class="lesson-icon">🔁</div>
+          <p><strong>Behavioral change is slow — and that's a product design problem.</strong> Guiding declined customers to improve their creditworthiness requires more than visibility; it requires habit loops and actionable coaching. Kompas surfaced the data but underinvested in the behavioral nudging layer.</p>
+        </div>
+        <div class="lesson">
+          <div class="lesson-icon">💡</div>
+          <p><strong>0-to-1 is as much about validating strategy as it is about shipping product.</strong> The real value of Kompas wasn't just the app — it was learning which parts of the hypothesis held and which required more fundamental rethinking before scaling.</p>
+        </div>
+      </div>
+    </div>
+
+  </article>
+
+  <footer>
+    © 2024 Ana Zaldivar · <a href="../index.html" style="color: inherit;">azalval.com</a>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = 'https://omletgvnkwgsjevuipfw.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_8VAHf9T_5R9MPBwjiwg4Hg_FdTuqCd2';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    function showRequestPanel() {
+      document.getElementById('unlockPanel').classList.remove('visible');
+      document.getElementById('requestPanel').classList.add('visible');
+    }
+    function showUnlockPanel() {
+      document.getElementById('requestPanel').classList.remove('visible');
+      document.getElementById('unlockPanel').classList.add('visible');
+    }
+
+    async function submitRequest() {
+      const name   = document.getElementById('reqName').value.trim();
+      const email  = document.getElementById('reqEmail').value.trim();
+      const reason = document.getElementById('reqReason').value.trim();
+      const btn    = document.getElementById('reqBtn');
+      const ok     = document.getElementById('reqSuccess');
+      const err    = document.getElementById('reqError');
+      if (!name || !email || !reason) return;
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      ok.style.display = 'none';
+      err.style.display = 'none';
+      try {
+        const res = await fetch('https://formspree.io/f/xgobqbyw', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            name, email, reason,
+            _subject: 'Case Study Access Request — Kompas: 0 to 1'
+          })
+        });
+        if (res.ok) {
+          ok.style.display = 'block';
+          btn.textContent = 'Sent ✓';
+        } else { throw new Error(); }
+      } catch {
+        err.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Send request →';
+      }
+    }
+
+    async function checkCode() {
+      const input = document.getElementById('codeInput');
+      const btn   = document.getElementById('gateBtn');
+      const err   = document.getElementById('gateError');
+      const code  = input.value.trim();
+      if (!code) return;
+      btn.disabled = true;
+      btn.textContent = 'Checking…';
+      err.style.display = 'none';
+      input.classList.remove('error');
+      const { data, error } = await sb
+        .from('access_codes')
+        .select('id')
+        .eq('code', code)
+        .eq('active', true)
+        .maybeSingle();
+      const success = !!data && !error;
+      await sb.from('access_log').insert({ success, code_used: code });
+      if (success) {
+        const gate = document.getElementById('gate');
+        gate.classList.add('unlocking');
+        setTimeout(() => gate.remove(), 500);
+      } else {
+        input.classList.add('error');
+        err.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Unlock →';
+        input.value = '';
+        input.focus();
+      }
+    }
+  </script>
+</body>
+</html>
