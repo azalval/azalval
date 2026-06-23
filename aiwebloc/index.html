@@ -78,6 +78,42 @@
       display: none; color: #fca5a5;
       font-size: 0.8rem; margin-top: 0.75rem; font-weight: 500;
     }
+    .gate-panel { display: none; }
+    .gate-panel.visible { display: block; }
+    .gate-request-link {
+      display: inline-block; margin-top: 1.25rem;
+      font-size: 0.8rem; color: rgba(255,255,255,0.4);
+      cursor: pointer; transition: color 0.2s;
+    }
+    .gate-request-link:hover { color: rgba(255,255,255,0.7); }
+    .gate-back {
+      display: inline-block; margin-bottom: 1.5rem;
+      font-size: 0.8rem; color: rgba(255,255,255,0.4);
+      cursor: pointer; transition: color 0.2s;
+    }
+    .gate-back:hover { color: rgba(255,255,255,0.7); }
+    .gate-field {
+      width: 100%; padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.07);
+      color: #fff; font-family: inherit; font-size: 0.875rem;
+      outline: none; margin-bottom: 0.75rem; box-sizing: border-box;
+      resize: vertical;
+    }
+    .gate-field::placeholder { color: rgba(255,255,255,0.3); }
+    .gate-field:focus { border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129,140,248,0.2); }
+    #reqBtn {
+      width: 100%; padding: 0.85rem;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff; border: none; border-radius: 10px;
+      font-family: inherit; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s, transform 0.2s;
+    }
+    #reqBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+    #reqBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    #reqSuccess { display: none; color: #86efac; font-size: 0.8rem; margin-top: 0.75rem; font-weight: 500; }
+    #reqError   { display: none; color: #fca5a5; font-size: 0.8rem; margin-top: 0.75rem; font-weight: 500; }
 
     :root {
       --text:     #0d0d0d;
@@ -102,10 +138,7 @@
 
     /* ── NAV ── */
     nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.25rem 3rem;
+      padding: 0;
       position: sticky;
       top: 0;
       background: rgba(255,255,255,0.88);
@@ -113,6 +146,15 @@
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       z-index: 100;
+    }
+    .nav-inner {
+      max-width: 936px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem clamp(1.25rem, 5vw, 3rem);
     }
     .logo {
       font-weight: 800;
@@ -142,11 +184,12 @@
     .hero {
       background: linear-gradient(135deg, #0d0d0d 0%, #1e1b4b 100%);
       color: #fff;
-      padding: 6rem 3rem 5rem;
+      padding: 6rem 0 5rem;
     }
     .hero-inner {
-      max-width: 780px;
+      max-width: 936px;
       margin: 0 auto;
+      padding: 0 clamp(1.25rem, 5vw, 3rem);
     }
     .hero-meta {
       display: flex;
@@ -210,9 +253,9 @@
 
     /* ── ARTICLE LAYOUT ── */
     .article {
-      max-width: 780px;
+      max-width: 936px;
       margin: 0 auto;
-      padding: 4rem 3rem 6rem;
+      padding: 4rem clamp(1.25rem, 5vw, 3rem) 6rem;
     }
 
     /* ── SECTION ── */
@@ -447,8 +490,8 @@
     }
 
     @media (max-width: 600px) {
-      nav { padding: 1.25rem 1.5rem; }
-      .hero { padding: 4rem 1.5rem 3rem; }
+      .nav-inner { padding: 1.25rem 1.5rem; }
+      .hero { padding: 4rem 0 3rem; }
       .article { padding: 3rem 1.5rem 4rem; }
       .hero-stats { gap: 1.5rem; }
       .cta-box { padding: 2rem 1.5rem; }
@@ -461,21 +504,41 @@
   <div id="gate">
     <div class="gate-box">
       <a class="gate-logo" href="../index.html"><span>az</span>alval</a>
-      <h2>Access Required</h2>
-      <p>This case study is private. Enter your access code to continue.</p>
-      <div class="gate-input-wrap">
-        <input id="codeInput" type="password" placeholder="Enter access code"
-               autocomplete="off" spellcheck="false"
-               onkeydown="if(event.key==='Enter') checkCode()" />
+
+      <!-- UNLOCK PANEL -->
+      <div id="unlockPanel" class="gate-panel visible">
+        <h2>Access Required</h2>
+        <p>This case study is private. Enter your access code to continue.</p>
+        <div class="gate-input-wrap">
+          <input id="codeInput" type="password" placeholder="Enter access code"
+                 autocomplete="off" spellcheck="false"
+                 onkeydown="if(event.key==='Enter') checkCode()" />
+        </div>
+        <button id="gateBtn" onclick="checkCode()">Unlock →</button>
+        <p id="gateError">Incorrect code. Please try again.</p>
+        <span class="gate-request-link" onclick="showRequestPanel()">Don't have a code? Request access →</span>
       </div>
-      <button id="gateBtn" onclick="checkCode()">Unlock →</button>
-      <p id="gateError">Incorrect code. Please try again.</p>
+
+      <!-- REQUEST PANEL -->
+      <div id="requestPanel" class="gate-panel">
+        <span class="gate-back" onclick="showUnlockPanel()">← Back</span>
+        <h2>Request Access</h2>
+        <p>Fill in your details and I'll get back to you shortly.</p>
+        <input class="gate-field" id="reqName" type="text" placeholder="Your name" />
+        <input class="gate-field" id="reqEmail" type="email" placeholder="Your email" />
+        <textarea class="gate-field" id="reqReason" rows="3" placeholder="Why are you interested in this case study?"></textarea>
+        <button id="reqBtn" onclick="submitRequest()">Send request →</button>
+        <p id="reqSuccess">Request sent! I'll review it and reach out with an access code.</p>
+        <p id="reqError">Something went wrong. Please try again.</p>
+      </div>
     </div>
   </div>
 
   <nav>
-    <a class="logo" href="../index.html"><span>az</span>alval</a>
-    <a class="back-link" href="../index.html#cases">← Back to Case Studies</a>
+    <div class="nav-inner">
+      <a class="logo" href="../index.html"><span>az</span>alval</a>
+      <a class="back-link" href="../index.html#cases">← Back to Case Studies</a>
+    </div>
   </nav>
 
   <!-- HERO -->
@@ -777,6 +840,47 @@
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // ── GATE ──
+    function showRequestPanel() {
+      document.getElementById('unlockPanel').classList.remove('visible');
+      document.getElementById('requestPanel').classList.add('visible');
+    }
+    function showUnlockPanel() {
+      document.getElementById('requestPanel').classList.remove('visible');
+      document.getElementById('unlockPanel').classList.add('visible');
+    }
+
+    async function submitRequest() {
+      const name   = document.getElementById('reqName').value.trim();
+      const email  = document.getElementById('reqEmail').value.trim();
+      const reason = document.getElementById('reqReason').value.trim();
+      const btn    = document.getElementById('reqBtn');
+      const ok     = document.getElementById('reqSuccess');
+      const err    = document.getElementById('reqError');
+      if (!name || !email || !reason) return;
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      ok.style.display = 'none';
+      err.style.display = 'none';
+      try {
+        const res = await fetch('https://formspree.io/f/xgobqbyw', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            name, email, reason,
+            _subject: 'Case Study Access Request — AI Website Localization'
+          })
+        });
+        if (res.ok) {
+          ok.style.display = 'block';
+          btn.textContent = 'Sent ✓';
+        } else { throw new Error(); }
+      } catch {
+        err.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Send request →';
+      }
+    }
+
     async function checkCode() {
       const input = document.getElementById('codeInput');
       const btn   = document.getElementById('gateBtn');
