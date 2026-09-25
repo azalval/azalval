@@ -227,7 +227,6 @@
     .hero-sub {
       font-size: 1.1rem;
       color: rgba(255,255,255,0.65);
-      max-width: 620px;
       line-height: 1.7;
       margin-bottom: 2.5rem;
     }
@@ -874,13 +873,9 @@
       btn.textContent = 'Checking…';
       err.style.display = 'none';
       input.classList.remove('error');
-      const { data, error } = await sb
-        .from('access_codes')
-        .select('id')
-        .eq('code', code)
-        .eq('active', true)
-        .maybeSingle();
-      const success = !!data && !error;
+      // Only the Kompas-specific code unlocks this page
+      const { data, error } = await sb.rpc('check_case_code', { p_case: 'zero2one', p_code: code });
+      const success = data === true && !error;
       await sb.from('access_log').insert({ success, code_used: code });
       if (success) {
         const gate = document.getElementById('gate');
