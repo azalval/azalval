@@ -122,7 +122,6 @@
     .hero-sub {
       font-size: 1.1rem;
       color: rgba(255,255,255,0.65);
-      max-width: 600px;
       line-height: 1.7;
       margin-bottom: 2.5rem;
     }
@@ -392,6 +391,24 @@
       .hero-stats { gap: 1.5rem; }
       .cta-box { padding: 2rem 1.5rem; }
     }
+
+    /* ── LANG TOGGLE ── */
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+    .lang-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.35rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.03em;
+    }
+    .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
+    [hidden] { display: none !important; }
   </style>
 </head>
 <body>
@@ -399,10 +416,14 @@
   <nav>
     <div class="nav-inner">
       <a class="logo" href="../index.html"><span>az</span>alval</a>
-      <a class="back-link" href="../index.html#cases">← Back to Case Studies</a>
+      <div class="nav-right">
+        <a class="back-link" href="../index.html#cases" data-en="← Back to Case Studies" data-es="← Volver a Casos">← Back to Case Studies</a>
+        <button class="lang-toggle" id="langBtn" onclick="toggleLang()" aria-label="Cambiar a español">ES</button>
+      </div>
     </div>
   </nav>
 
+  <div class="lang-en">
   <!-- HERO -->
   <div class="hero">
     <div class="hero-inner">
@@ -692,9 +713,331 @@
     </div>
 
   </div>
+  </div>
+
+  <div class="lang-es" hidden>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-meta">
+        <span class="tag tag-purple">Localización · IA</span>
+        <span class="tag tag-teal">Proyecto final UC Berkeley · 2024</span>
+        <span class="tag-date">29 de agosto de 2024</span>
+      </div>
+      <h1>Localización de sitios web con IA<br><em>a escala</em></h1>
+      <p class="hero-sub">Cómo la IA puede generar automáticamente contenido web personalizado y adaptado culturalmente para pequeñas empresas, eliminando el costo y la fricción de expandirse a otros mercados. Una propuesta estratégica desarrollada como proyecto final del programa AI: Business Strategies and Applications de UC Berkeley.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">$140M</div><div class="lbl">Potencial de ingresos incrementales (anual)</div></div>
+        <div class="hero-stat"><div class="num">10M</div><div class="lbl">Sitios web escalables en la Fase 2</div></div>
+        <div class="hero-stat"><div class="num">NPS 70+</div><div class="lbl">Meta de satisfacción del cliente</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="article">
+
+    <!-- CONTEXT -->
+    <div class="section">
+      <p class="section-label">Contexto y problema</p>
+      <h2>Las pequeñas empresas quieren crecer a nivel global. Las herramientas no lo facilitan.</h2>
+      <p>MailChimp, una plataforma de Intuit que usan millones de PyMEs en todo el mundo, ya ofrece herramientas con IA para campañas de email, segmentación de audiencias y automatizaciones del ciclo de vida. Pero su creador de sitios web seguía siendo completamente manual: requería que el usuario aportara el 100% del contenido, aunque rara vez es experto en diseño web.</p>
+      <p>La brecha era aún mayor para los negocios que querían llegar a clientes en otros países o idiomas. Las opciones existentes implicaban contratar a un diseñador web o pagar integraciones de terceros como Wix o Canva, sumando costos y fricción que la mayoría de las pequeñas empresas no pueden absorber.</p>
+      <div class="callout">
+        <p>La gran oportunidad desaprovechada: MailChimp está conectado con QuickBooks, que contiene datos transaccionales muy valiosos —productos más vendidos, perfil demográfico de los clientes, ubicación geográfica— y ninguno se estaba usando para personalizar o localizar el contenido del sitio web.</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- SOLUTION -->
+    <div class="section">
+      <p class="section-label">Solución y estrategia</p>
+      <h2>Generar automáticamente contenido web personalizado, localizado y adaptado culturalmente.</h2>
+      <p>La propuesta: agregar capacidades de IA al creador de sitios de MailChimp para generar automáticamente el texto, adaptado a la industria del negocio, su público objetivo, idioma y región. No solo traducción: localización real, adaptada al segmento y a la cultura.</p>
+      <p>La ventaja competitiva frente a herramientas como Wix, Squarespace o Web.com está en la capa de datos: al combinar los datos transaccionales de QuickBooks con el desempeño histórico de las campañas de email, la IA puede generar contenido que refleja lo que realmente se vende y conecta en cada mercado.</p>
+      <p>Implementación en dos fases:</p>
+      <div class="phase-grid">
+        <div class="phase-card">
+          <p class="phase-num">Fase 1</p>
+          <h3>Integrar GenAI existente</h3>
+          <p style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem;">Inversión inicial</p>
+          <div class="invest">$606K</div>
+          <ul>
+            <li>Integrar GPT-X, Llama X o Anthropic Claude vía API</li>
+            <li>Transfer learning por industria e idioma</li>
+            <li>1 equipo scrum · 2 meses · 4 ingenieros</li>
+            <li>Pruebas con hasta 100K sitios web</li>
+          </ul>
+          <div class="revenue-box">
+            <div class="rev-num">$500K</div>
+            <div class="rev-label">Ingresos introductorios a $5 por sitio</div>
+          </div>
+        </div>
+        <div class="phase-card accent">
+          <p class="phase-num">Fase 2</p>
+          <h3>Desarrollo propio a escala</h3>
+          <p style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.2rem;">Inversión inicial</p>
+          <div class="invest">$10M</div>
+          <ul>
+            <li>Modelo NLG propio sobre la base de Intuit Assist</li>
+            <li>~10 ingenieros y expertos en contenido · 4 meses</li>
+            <li>$10M en almacenamiento en la nube · $2M en marketing</li>
+            <li>Escalar a 10 millones de sitios web a nivel global</li>
+          </ul>
+          <div class="revenue-box">
+            <div class="rev-num">$140M</div>
+            <div class="rev-label">Ingresos anuales a $20 por sitio · 70% de conversión</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- TECHNOLOGY -->
+    <div class="section">
+      <p class="section-label">Tecnología</p>
+      <h2>Dos modelos de IA trabajando juntos para generar contenido que encaja.</h2>
+      <p>En la Fase 1 se integran modelos existentes basados en transformers (GPT-X, Llama X), aplicando transfer learning por industria, región e idioma. En la Fase 2, dos modelos propios trabajan en conjunto:</p>
+      <div class="data-sources">
+        <div class="data-source">
+          <div class="ds-icon">🏗️</div>
+          <div>
+            <h4>Modelo de generación de plantillas</h4>
+            <p>Usa datos de referencia externos para crear la estructura del sitio —diseño, secciones, número de palabras— adaptada por industria y región.</p>
+          </div>
+        </div>
+        <div class="data-source">
+          <div class="ds-icon">✍️</div>
+          <div>
+            <h4>Modelo de generación de contenido</h4>
+            <p>Un LLM entrenado con aprendizaje autosupervisado genera texto adecuado al contexto para cada sección de la plantilla, a partir de la descripción del negocio, la región seleccionada, los productos más vendidos y el perfil demográfico del público. Una arquitectura transformer procesa cada sección de forma independiente, con redes neuronales multicapa que predicen el texto completo.</p>
+          </div>
+        </div>
+      </div>
+      <p>Objetivo de entrenamiento: minimizar el porcentaje de texto generado que los usuarios necesitan editar o regenerar. En las primeras etapas, la validación humana (aprendizaje reforzado) con expertos en contenido web aporta la calificación de calidad; una vez que la Fase 1 esté en producción, la retroalimentación de NPS dentro del producto toma ese papel.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- DATA -->
+    <div class="section">
+      <p class="section-label">Datos</p>
+      <h2>Tres fuentes impulsan el motor de localización.</h2>
+      <div class="data-sources">
+        <div class="data-source">
+          <div class="ds-icon">🌐</div>
+          <div>
+            <h4>Datos de referencia externos</h4>
+            <p>Tendencias de sitios similares por industria y región, obtenidas de datasets públicos o de un web crawler propio que clasifica el contenido por industria, idioma, audiencia y tipo de sección.</p>
+          </div>
+        </div>
+        <div class="data-source">
+          <div class="ds-icon">📊</div>
+          <div>
+            <h4>Datos del negocio del usuario</h4>
+            <p>La integración con QuickBooks aporta datos transaccionales valiosos: productos más vendidos, perfil demográfico de los clientes, ubicación geográfica y estacionalidad. El historial de campañas de email suma otra capa de conocimiento sobre la audiencia.</p>
+          </div>
+        </div>
+        <div class="data-source">
+          <div class="ds-icon">🔬</div>
+          <div>
+            <h4>Datos sintéticos por aumento</h4>
+            <p>Los datos recopilados se amplían con herramientas como GPT-X para expandir el dataset y evitar el sobreajuste, de modo que cada sitio generado se sienta único y no como una plantilla.</p>
+          </div>
+        </div>
+      </div>
+      <p>Una llave multiparámetro —industria × región × público objetivo × sección del sitio— vincula las tres fuentes y permite al modelo predecir qué contenido encaja en cada contexto específico.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- METRICS -->
+    <div class="section">
+      <p class="section-label">Métricas de éxito</p>
+      <h2>Cómo se ve el éxito para los clientes.</h2>
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="icon">⏱️</div>
+          <h4>Tiempo de publicación</h4>
+          <p>Meta: reducir el tiempo de creación del sitio de ~4 semanas a menos de 1 semana.</p>
+        </div>
+        <div class="metric-card">
+          <div class="icon">😊</div>
+          <h4>NPS</h4>
+          <p>Meta: NPS > 70 para el creador con IA vs. una línea base de ~40.</p>
+        </div>
+        <div class="metric-card">
+          <div class="icon">🖱️</div>
+          <h4>Adopción de la función</h4>
+          <p>&gt;50% de adopción entre clientes activos tanto en MC como en QBO.</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- MEASUREMENT -->
+    <div class="section">
+      <p class="section-label">Medición</p>
+      <h2>Primero evals. Después pruebas A/B.</h2>
+      <p>Antes de que cualquier usuario vea la función, validamos la calidad a escala con un pipeline estructurado de evals. Solo cuando los resultados superan los umbrales definidos pasamos a la experimentación en vivo.</p>
+
+      <!-- EVALS SUBSECTION -->
+      <div style="margin:2rem 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;">
+        <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;">Paso 1 — Prelanzamiento</p>
+        <h3 style="font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:1rem;">Especificación de comportamiento y evals</h3>
+        <p style="font-size:0.9rem;color:var(--muted);line-height:1.75;margin-bottom:1.25rem;">La especificación de comportamiento se escribe antes de entrenar cualquier modelo: define cómo se ve un resultado "bueno" para cada combinación de región, dispositivo, industria y audiencia que la IA va a encontrar. Después, los evals prueban los resultados del modelo contra esta especificación a escala, detectando fallas antes de que lleguen a usuarios reales.</p>
+
+        <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;">Matriz de escenarios</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;margin-bottom:1.5rem;">
+          <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:1rem;">
+            <div style="font-size:1.1rem;margin-bottom:0.4rem;">🌐</div>
+            <p style="font-size:0.8rem;font-weight:700;margin-bottom:0.2rem;">Región</p>
+            <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;">en-US, es-MX, pt-BR, fr-FR, de-DE — cada una evaluada por un experto nativo en contenido.</p>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:1rem;">
+            <div style="font-size:1.1rem;margin-bottom:0.4rem;">📱</div>
+            <p style="font-size:0.8rem;font-weight:700;margin-bottom:0.2rem;">Dispositivo</p>
+            <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;">La versión web y la móvil se validan por separado: el diseño, la longitud del texto y el tono pueden variar.</p>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:1rem;">
+            <div style="font-size:1.1rem;margin-bottom:0.4rem;">🏪</div>
+            <p style="font-size:0.8rem;font-weight:700;margin-bottom:0.2rem;">Industria</p>
+            <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;">Retail, alimentos y bebidas, servicios profesionales, hotelería — cada una con expectativas de tono distintas.</p>
+          </div>
+          <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:1rem;">
+            <div style="font-size:1.1rem;margin-bottom:0.4rem;">👥</div>
+            <p style="font-size:0.8rem;font-weight:700;margin-bottom:0.2rem;">Audiencia</p>
+            <p style="font-size:0.78rem;color:var(--muted);line-height:1.5;">B2C vs. B2B, local vs. turista, rango de edad — el contenido se adapta a quien el negocio quiere llegar.</p>
+          </div>
+        </div>
+
+        <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;">Tipos de evals</p>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <div style="display:flex;gap:0.9rem;align-items:flex-start;padding:0.85rem 1rem;background:#fff;border:1px solid var(--border);border-radius:10px;">
+            <span style="font-size:1rem;flex-shrink:0;">🤖</span>
+            <div>
+              <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.15rem;">LLM como juez (automatizado a escala)</p>
+              <p style="font-size:0.8rem;color:var(--muted);line-height:1.5;">Un modelo juez de Claude califica cada resultado generado contra los criterios de la especificación —coherencia, adecuación cultural, tono, precisión y seguridad de marca— en toda la matriz de escenarios. Se ejecuta con cada actualización del modelo.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.9rem;align-items:flex-start;padding:0.85rem 1rem;background:#fff;border:1px solid var(--border);border-radius:10px;">
+            <span style="font-size:1rem;flex-shrink:0;">👩‍💼</span>
+            <div>
+              <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.15rem;">Evaluación humana (expertos por región)</p>
+              <p style="font-size:0.8rem;color:var(--muted);line-height:1.5;">Expertos nativos en contenido califican una muestra por región en naturalidad, pertinencia cultural y si un cliente local confiaría en el sitio. Las calificaciones humanas calibran y validan al juez automatizado.</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.9rem;align-items:flex-start;padding:0.85rem 1rem;background:#fff;border:1px solid var(--border);border-radius:10px;">
+            <span style="font-size:1rem;flex-shrink:0;">🔁</span>
+            <div>
+              <p style="font-size:0.85rem;font-weight:700;margin-bottom:0.15rem;">Suite de regresión</p>
+              <p style="font-size:0.8rem;color:var(--muted);line-height:1.5;">Un conjunto fijo de casos de prueba de referencia —uno por cada combinación de región × dispositivo × industria— se ejecuta antes de cada despliegue. Cualquier caída de calidad por debajo del umbral definido bloquea el lanzamiento.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:1.25rem;background:linear-gradient(135deg,#eef2ff,#f5f3ff);border:1px solid #e0e7ff;border-radius:10px;padding:1rem 1.25rem;display:flex;align-items:center;gap:0.75rem;">
+          <span style="font-size:1rem;">✅</span>
+          <p style="font-size:0.85rem;color:#3730a3;font-weight:600;margin:0;line-height:1.5;"><strong>Requisito para pasar a A/B:</strong> un puntaje mínimo de 80% en los evals en todas las combinaciones de región × dispositivo antes de iniciar las pruebas en vivo.</p>
+        </div>
+      </div>
+
+      <!-- A/B TESTING SUBSECTION -->
+      <div style="margin:2rem 0 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;">
+        <p style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;">Paso 2 — Experimento en vivo</p>
+        <h3 style="font-size:1.1rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:1rem;">Marco de pruebas A/B</h3>
+        <p style="font-size:0.9rem;color:var(--muted);line-height:1.75;margin-bottom:1.25rem;">La Fase 1 arranca con un grupo de prueba de 1,000 sitios invitados a usar el creador con IA por una tarifa introductoria de $5, comparado con un grupo de control equivalente en industria, idioma y antigüedad. El experimento dura 12 semanas, con nuevos grupos cada semana hasta alcanzar significancia estadística.</p>
+        <div class="hypothesis">
+          <div class="hyp-label">Hipótesis</div>
+          <p>El grupo de prueba con acceso al creador de sitios con IA <strong>reducirá el tiempo de creación en más de 50%</strong> (de ~4 semanas a menos de 1 semana) y alcanzará un <strong>nivel de satisfacción 50% mayor</strong> que el grupo de control (NPS de 40 a +60).</p>
+        </div>
+        <p style="font-size:0.9rem;color:var(--muted);line-height:1.75;margin-top:1.25rem;">Un experimento secundario mide la disposición a pagar para calibrar el precio final antes del lanzamiento completo.</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- HUMANS & AI -->
+    <div class="section">
+      <p class="section-label">Personas e IA</p>
+      <h2>El equipo correcto y la ética correcta.</h2>
+      <p>La Fase 2 requiere una división dedicada: científicos de datos, ingenieros de software, expertos en contenido, product managers, diseñadores UX y un equipo de políticas y gobernanza que garantice que los modelos sean seguros para las personas, cumplan con la protección de datos personales y estén libres de plagio.</p>
+      <p>Una consideración ética importante: esta función podría afectar la relevancia de los diseñadores web en el mercado. El posicionamiento debe ser claro: la IA acelera su trabajo, no lo reemplaza.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- NEXT STEPS -->
+    <div class="section">
+      <p class="section-label">Próximos pasos</p>
+      <h2>La hoja de ruta.</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <p><strong>Ejecutar la Fase 1 durante 12 semanas</strong> — recopilar datos y retroalimentación cada semana y reforzar los modelos con lo aprendido.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <p><strong>Arrancar el desarrollo de la Fase 2</strong> con los aprendizajes de la Fase 1 — se estiman 6–9 meses para la primera prueba de concepto.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <p><strong>Evaluar la continuidad de la Fase 1</strong> mientras se construye la Fase 2, con base en un análisis de costo-beneficio.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <p><strong>Planear la Fase 3:</strong> desarrollar modelos propios de visión por computadora para generar automáticamente los recursos visuales de los sitios.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <p><strong>Evaluar oportunidades más amplias de IA</strong> en todo el ciclo de marketing — campañas, segmentación y analítica.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-box">
+      <h2>¿Quieres aplicar esto en tu negocio?</h2>
+      <p>Ya sea que estés entrando a un nuevo mercado o quieras que tu sitio actual se sienta realmente local, hablemos de cómo la IA puede ayudarte a lograrlo más rápido.</p>
+      <a class="btn btn-primary" href="../index.html#contact">Hablemos →</a>
+    </div>
+
+  </div>
+  </div>
 
   <footer>&copy; 2026 Ana Zaldivar · azalval.com</footer>
 
+  <script>
+    // ── LANGUAGE TOGGLE ──
+    const TITLES = {
+      en: 'Case Study: AI-Powered Website Localization · Ana Zaldivar',
+      es: 'Caso: Localización de sitios web con IA · Ana Zaldivar'
+    };
+    let lang = 'en';
 
+    function setLang(next) {
+      lang = next;
+      const btn = document.getElementById('langBtn');
+      btn.textContent = lang === 'en' ? 'ES' : 'EN';
+      btn.setAttribute('aria-label', lang === 'en' ? 'Cambiar a español' : 'Switch to English');
+      document.documentElement.lang = lang;
+      document.title = TITLES[lang];
+      document.querySelector('.lang-en').hidden = lang !== 'en';
+      document.querySelector('.lang-es').hidden = lang !== 'es';
+      document.querySelectorAll('[data-en][data-es]').forEach(el => {
+        el.textContent = el.dataset[lang];
+      });
+    }
+
+    function toggleLang() {
+      setLang(lang === 'en' ? 'es' : 'en');
+      window.scrollTo(0, 0);
+    }
+
+    // Open in Spanish with ?lang=es
+    if (new URLSearchParams(location.search).get('lang') === 'es') setLang('es');
+  </script>
 </body>
 </html>
