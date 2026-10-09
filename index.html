@@ -463,9 +463,58 @@
     .lang-toggle:hover { border-color: var(--accent); color: var(--accent); }
 
     /* ── MOBILE NAV ── */
+    .nav-toggle {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      cursor: pointer;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--text);
+      transition: transform 0.25s, opacity 0.2s;
+    }
+    nav.open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    nav.open .nav-toggle span:nth-child(2) { opacity: 0; }
+    nav.open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-toggle { display: flex; }
+      nav ul {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 0.5rem 1.5rem 1.25rem;
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+      }
+      nav.open ul { display: flex; }
+      nav ul li { border-bottom: 1px solid var(--border); }
+      nav ul li:nth-last-child(-n+2) { border-bottom: none; }
+      nav ul a { display: block; padding: 0.9rem 0; font-size: 1rem; }
+      nav ul .nav-cta { text-align: center; margin-top: 0.75rem; padding: 0.8rem 1rem; }
+      nav ul .lang-toggle { width: 100%; margin-top: 0.75rem; padding: 0.7rem; font-size: 0.875rem; }
+    }
+
     @media (max-width: 600px) {
-      nav { padding: 1.25rem 1.5rem; }
-      nav ul { gap: 1.25rem; }
       .hero, .services, .about, .contact { padding-left: 1.5rem; padding-right: 1.5rem; }
       .contact-inner { padding: 2.5rem 1.5rem; }
     }
@@ -475,7 +524,10 @@
 
   <nav>
     <a class="logo" href="#"><span>az</span>alval</a>
-    <ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navMenu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul id="navMenu">
       <li><a href="#services" data-en="Services" data-es="Servicios">Services</a></li>
       <li><a href="#cases" data-en="Case Studies" data-es="Casos">Case Studies</a></li>
       <li><a href="#about" data-en="About" data-es="Acerca de">About</a></li>
@@ -687,6 +739,19 @@
         btn.style.opacity = '1';
       }
     });
+
+    // ── MOBILE MENU ──
+    const navEl = document.querySelector('nav');
+    const navToggle = document.getElementById('navToggle');
+    function setMenu(open) {
+      navEl.classList.toggle('open', open);
+      navToggle.setAttribute('aria-expanded', open);
+      navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    }
+    navToggle.addEventListener('click', () => setMenu(!navEl.classList.contains('open')));
+    document.querySelectorAll('#navMenu a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+    document.addEventListener('click', e => { if (!navEl.contains(e.target)) setMenu(false); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
 
     // ── LANGUAGE TOGGLE ──
     let lang = 'en';
